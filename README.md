@@ -1,7 +1,7 @@
-# Guni-BotX: An AI-Enabled Robot for Smart Interaction & Automation
+# Real-Time Multi-Robot Monitoring and Control Dashboard
 
 ## Overview
-Guni-BotX is an AI-powered robot designed for smart interaction and automation. This project includes a robust web-based dashboard for real-time monitoring, control, and management of multiple robots, ensuring efficiency and seamless operations.
+It is an AI-powered robot designed for smart interaction and automation. This project includes a robust web-based dashboard for real-time monitoring, control, and management of multiple robots, ensuring efficiency and seamless operations.
 
 ## Features
 
@@ -29,7 +29,7 @@ Guni-BotX is an AI-powered robot designed for smart interaction and automation. 
 ### API & WebSocket Integration
 - **WebSockets:** Enable real-time updates on robot status.
 - **REST API:** Allow external integrations with other systems.
-- **Push Server:** Set up a push notification server for real-time alerts and notifications.
+- **Push Server:** Set up a push server for real-time alerts and notifications.
 
 ### User Interface Enhancements
 - **Live Data Visualization:** Display charts for robot uptime, efficiency, and usage statistics.
