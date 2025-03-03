@@ -35,7 +35,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #1E1E1E;
+    background-color: #1F1B26;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.15);
@@ -72,7 +72,8 @@
     font-size: 1rem;
     border: 1px solid #ddd;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    color: white;
+    background-color: #1E1E1E;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
