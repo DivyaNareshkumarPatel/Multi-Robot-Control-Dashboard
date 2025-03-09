@@ -1,152 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { getAllRobots, sendCommands } from "../api/api";
+import "../style/robotControl.css";
 
-const RobotControl = () => {
-  const [status, setStatus] = useState('Idle');  // To keep track of the robot's current status
-  const [selectedRobot, setSelectedRobot] = useState('Robot 1');  // To keep track of the selected robot
+export default function RobotControl() {
+  const [logs, setLogs] = useState([]);
+  const [selectedRobot, setSelectedRobot] = useState("");
+  const [robots, setRobots] = useState([]);
 
-  // List of robots to choose from
-  const robots = ['Robot 1', 'Robot 2', 'Robot 3'];
+  useEffect(() => {
+    const fetchRobots = async () => {
+      try {
+        const response = await getAllRobots();
+        setRobots(response.data);
+        if (response.data.length > 0) {
+          setSelectedRobot(response.data[0].robotId); // Ensure robotId is correct
+        }
+      } catch (error) {
+        console.error("Error fetching robots:", error);
+      }
+    };
 
-  // Control Functions
-  const moveForward = () => {
-    setStatus('Moving Forward');
-    // console.log(${selectedRobot} is moving forward);
-  };
+    fetchRobots();
+  }, []);
 
-  const moveBackward = () => {
-    setStatus('Moving Backward');
-    // console.log(${selectedRobot} is moving backward);
-  };
+  const handleCommand = async (command) => {
+    if (!selectedRobot) {
+      alert("Please select a robot first.");
+      return;
+    }
 
-  const turnLeft = () => {
-    setStatus('Turning Left');
-    // console.log(${selectedRobot} is turning left);
-  };
+    setLogs((prevLogs) => [`> [Robot ${selectedRobot}] ${command}`, ...prevLogs]);
 
-  const turnRight = () => {
-    setStatus('Turning Right');
-    // console.log(${selectedRobot} is turning right);
-  };
-
-  const stopMovement = () => {
-    setStatus('Idle');
-    // console.log(${selectedRobot} has stopped);
+    try {
+      await sendCommands({ robotId: selectedRobot, command });
+    } catch (error) {
+      console.error("Error sending command:", error);
+    }
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Robot Control</h1>
+    <div className="robot-container">
+      <h1 className="title">Robot Control Panel</h1>
 
-      {/* Robot selection */}
-      <div style={styles.robotSelection}>
-        <label htmlFor="robotSelect" style={styles.robotLabel}>Select Robot:</label>
+      <div className="robot-selector">
+        <label>Select Robot:</label>
         <select
-          id="robotSelect"
+          className="robot-dropdown"
           value={selectedRobot}
           onChange={(e) => setSelectedRobot(e.target.value)}
-          style={styles.robotSelect}
         >
-          {robots.map((robot, index) => (
-            <option key={index} value={robot}>
-              {robot}
-            </option>
-          ))}
+          {robots.length > 0 ? (
+            robots.map((robot, index) => (
+              <option key={robot.robotId || index} value={robot.robotId}>
+                {`${robot.robotId}`}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading Robots...</option>
+          )}
         </select>
       </div>
 
-      <div style={styles.status}>
-        <p style={styles.statusText}>Current Status: {status}</p>
+      <div className="grid-controls">
+        <button className="control-btn" onClick={() => handleCommand("Move Forward")}>
+          Forward
+        </button>
+        <button className="control-btn" onClick={() => handleCommand("Move Left")}>
+          Left
+        </button>
+        <button className="control-btn stop-btn" onClick={() => handleCommand("Stop")}>
+          Stop
+        </button>
+        <button className="control-btn" onClick={() => handleCommand("Move Right")}>
+          Right
+        </button>
+        <button className="control-btn" onClick={() => handleCommand("Move Backward")}>
+          Backward
+        </button>
+        <button className="control-btn" onClick={() => handleCommand("Rotate Left")}>
+          Rotate Left
+        </button>
+        <button className="control-btn" onClick={() => handleCommand("Rotate Right")}>
+          Rotate Right
+        </button>
+        <button className="control-btn speed-up" onClick={() => handleCommand("Speed Up")}>
+          Speed Up
+        </button>
+        <button className="control-btn slow-down" onClick={() => handleCommand("Slow Down")}>
+          Slow Down
+        </button>
       </div>
 
-      <div style={styles.controls}>
-        <button onClick={moveForward} style={styles.controlButton}>Move Forward</button>
-
-        <div style={styles.directionButtons}>
-          <button onClick={turnLeft} style={styles.controlButton}>Turn Left</button>
-          <button onClick={turnRight} style={styles.controlButton}>Turn Right</button>
+      <div className="control-terminal">
+        <div className="log-container">
+          {logs.length > 0 ? logs.map((log, index) => <p key={index}>{log}</p>) : <p>No commands yet...</p>}
         </div>
-
-        <button onClick={moveBackward} style={styles.controlButton}>Move Backward</button>
-        <button onClick={stopMovement} style={styles.stopButton}>Stop</button>
       </div>
     </div>
   );
-};
-
-// Styles for the dark theme
-const styles = {
-  container: {
-    width: '100%',
-    height: '100vh',
-    padding: '20px',
-    color: '#fff',
-    backgroundColor: '#1F1B26',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '10px',
-  },
-  header: {
-    color: '#fff',
-    fontSize: '2.5rem',
-    marginBottom: '20px',
-  },
-  robotSelection: {
-    marginBottom: '30px',
-  },
-  robotLabel: {
-    fontSize: '1.2rem',
-    color: '#fff',
-    marginRight: '10px',
-  },
-  robotSelect: {
-    padding: '10px',
-    fontSize: '1rem',
-    backgroundColor: '#333',
-    color: '#fff',
-    borderRadius: '8px',
-    border: '1px solid #444',
-  },
-  status: {
-    marginBottom: '30px',
-  },
-  statusText: {
-    fontSize: '1.5rem',
-    color: '#fff',
-  },
-  controls: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '15px',
-  },
-  controlButton: {
-    backgroundColor: '#333',
-    color: '#fff',
-    border: '1px solid #444',
-    borderRadius: '8px',
-    padding: '15px 30px',
-    fontSize: '1.2rem',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-  directionButtons: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '250px',
-  },
-  stopButton: {
-    backgroundColor: '#e74c3c',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '15px 30px',
-    fontSize: '1.2rem',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-};
-
-// Export the component
-export default RobotControl;
+}

@@ -55,4 +55,21 @@ const deleteRobot = async (req, res) => {
   }
 };
 
-module.exports = { createRobot, getAllRobots, getRobotById, updateRobot, deleteRobot };
+const sendCommands = async (req, res) => {
+  try {
+    const { robotId, command } = req.body;
+    if (!robotId || !command) {
+      return res.status(400).json({ message: "Robot ID and command are required" });
+    }
+
+    console.log(`Command received: Robot ${robotId} -> ${command}`);
+
+    res.status(200).json({ message: "Command sent successfully", robotId, command });
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+
+module.exports = { createRobot, getAllRobots, getRobotById, updateRobot, deleteRobot, sendCommands };
