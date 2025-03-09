@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import {login} from '../api/api'
 import "../style/login.css";
 
 export default function RightLogin() {
@@ -46,7 +46,7 @@ export default function RightLogin() {
     if (hasError) return;
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
+      const response = await login({email, password});
 
       const token = response.data.token;
       const role = response.data.role;
@@ -66,7 +66,7 @@ export default function RightLogin() {
       }, 1000);
 
     } catch (err) {
-      setMessage(err.response ? err.response.data.message : 'Server error');
+      setMessage(err.response?.data?.message || 'Invalid credentials');
       setMessageType('error');
     }
   };
