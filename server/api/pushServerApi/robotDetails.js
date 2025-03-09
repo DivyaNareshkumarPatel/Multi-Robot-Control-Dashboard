@@ -49,5 +49,25 @@ router.post("/robots/commands", authenticate, async (req, res) => {
     }
 });
 
+router.post("/robots/response", authenticate, async (req, res) => {
+    try {
+        const { robotId, response } = req.body;
+
+        if (!robotId || !response) {
+            return res.status(400).json({ message: "robotId and response are required" });
+        }
+
+        
+        console.log(`Response received: Robot ${robotId} -> ${response}`);
+
+        res.status(200).json({ message: "Response received successfully", robotId, response });
+    } catch (error) {
+
+        console.log(error.message)
+
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+});
+
 
 module.exports = router;
