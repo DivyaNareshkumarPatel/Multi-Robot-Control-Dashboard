@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle } from "lucide-react";
-import axios from 'axios'; // Import axios to make HTTP requests
+import {userDetails, handleUserPermissionLogin} from '../api/api'
 import '../style/adminDashboard.css';
 
 export default function UserDetails() {
@@ -12,11 +12,11 @@ export default function UserDetails() {
     const fetchUsers = async () => {
       try {
         // Fetch users from the backend
-        const response = await axios.get("http://localhost:5000/api/users/user"); // Adjust URL as per your API
+        const response = await userDetails()
         setUsers(response.data); // Set the users in the state
         setLoading(false); // Set loading to false after fetching the data
       } catch (err) {
-        setError("Error fetching users"); // Handle errors
+        setError("Error fetching users");
         setLoading(false);
       }
     };
@@ -26,11 +26,9 @@ export default function UserDetails() {
 
   const handlePermission = async (id, action) => {
     try {
-      // Send the updated permission status to the backend
-      const endpoint = action === "approve" ? "/approve" : "/reject"; // Determine the endpoint
-      await axios.patch(`http://localhost:5000/api/admin${endpoint}`, { userId: id });
+      const endpoint = action === "approve" ? "/approve" : "/reject";
+      handleUserPermissionLogin({endpoint, id})
 
-      // Update the permission locally after success
       setUsers(users.map(user => user._id === id ? { ...user, status: action === "approve" ? "approved" : "rejected" } : user));
     } catch (err) {
       setError("Error updating permission");

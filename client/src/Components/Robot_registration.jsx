@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import {robotRegistration} from '../api/api'
 
 const RobotRegistration = () => {
   const [formData, setFormData] = useState({
@@ -84,7 +84,7 @@ const RobotRegistration = () => {
 
     if (validateForm()) {
       try {
-        const response = await axios.post("http://localhost:5000/api/robot/robots", formData);
+        await robotRegistration({formData})
         setSuccessMessage("Robot Registered Successfully! ✅");
         setFormData({
           robotName: "",
