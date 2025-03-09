@@ -57,6 +57,7 @@ router.post("/robots/response", authenticate, async (req, res) => {
             return res.status(400).json({ message: "robotId and response are required" });
         }
 
+        
         console.log(`Response received: Robot ${robotId} -> ${response}`);
 
         res.status(200).json({ message: "Response received successfully", robotId, response });
