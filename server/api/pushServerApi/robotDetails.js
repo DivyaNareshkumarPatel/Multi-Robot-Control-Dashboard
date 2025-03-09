@@ -33,4 +33,21 @@ router.get('/robots/:robotId', authenticate, async (req, res) => {
     }
 });
 
+router.post("/robots/commands", authenticate, async (req, res) => {
+    try {
+        const { robotId, command } = req.body;
+
+        if (!robotId || !command) {
+            return res.status(400).json({ message: "robotId and command are required" });
+        }
+
+        console.log(`Command received: Robot ${robotId} -> ${command}`);
+
+        res.status(200).json({ message: "Command sent successfully", robotId, command });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+});
+
+
 module.exports = router;

@@ -23,40 +23,71 @@ export const signup = async ({ name, email, password, role }) => {
         });
         return response;
     }
-    catch(error){
+    catch (error) {
         console.error("Error logging in:", error.response ? error.response.data : error.message);
         return error;
     }
 }
 
-export const userDetails = async() => {
-    try{
+export const userDetails = async () => {
+    try {
         const response = await axios.get(`${url}/api/users/user`);
         return response
     }
-    catch(error){
+    catch (error) {
         console.error(error.response ? error.response.data : error.message);
         return error;
     }
 }
 
-export const handleUserPermissionLogin = async({endpoint, id}) => {
-    try{
+export const handleUserPermissionLogin = async ({ endpoint, id }) => {
+    try {
         const response = await axios.patch(`${url}/api/admin${endpoint}`, { userId: id });
         return response
     }
-    catch(error){
+    catch (error) {
         console.error(error.response ? error.response.data : error.message);
         return error
     }
 }
 
-export const robotRegistration = async({formData}) => {
-    try{
+export const robotRegistration = async ({ formData }) => {
+    try {
         const response = await axios.post(`${url}/api/robot/robots`, formData);
         return response
     }
-    catch(error){
+    catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error
+    }
+}
+
+export const getAllRobots = async () => {
+    try {
+        const response = await axios.get(`${url}/api/robot/robots`);
+        return response;
+    }
+    catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error
+    }
+}
+
+export const sendCommands = async ({ robotId, command }) => {
+    try {
+        const response = await axios.post(
+            `${url}/api/robots/commands`,
+            { robotId, command },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": "push_server_robot_authentication",
+                },
+            }
+        );
+        return response
+    }
+    catch (error) {
         console.error(error.response ? error.response.data : error.message);
         return error
     }

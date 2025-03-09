@@ -1,0 +1,149 @@
+
+.grid-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 15px;
+  background-color: #282a36;
+  border-radius: 5px;
+}
+
+.control-btn {
+  background: linear-gradient(145deg, #8a2be2, #7a22cc);
+  border: none;
+  padding: 15px;
+  font-size: 18px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 3px 3px 6px #1a1a1a, -3px -3px 6px #3a3a3a;
+}
+
+.control-btn:hover {
+  transform: scale(1.01);
+  /* box-shadow: 2px 2px 2px #6a1db5, -2px -2px 2px #6a1db5; */
+}
+
+.control-terminal {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 92%;
+  /* max-width: 800px; */
+  background-color: #1e1e1e;
+  /* border-radius: 8px; */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.control-terminal::before {
+  content: "Commad logs";
+  display: block;
+  padding: 8px;
+  background-color: #252526;
+  color: #cccccc;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: left;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.log-container {
+  height: 200px;
+  overflow-y: auto;
+  background-color: #1e1e1e;
+  padding: 10px;
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 0 0 8px 8px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Command logs with cursor effect */
+.log-container p {
+  margin: 5px 0;
+  white-space: pre-wrap;
+  font-family: 'Fira Code', monospace;
+  animation: blink-cursor 1s infinite;
+}
+
+/* Scrollbar for logs */
+.log-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+.log-container::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+.robot-selector {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  font-family: 'Fira Code', monospace;
+}
+
+.robot-selector label {
+  color: #ffffff;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.robot-dropdown {
+  background-color: #252526;
+  color: #ffffff;
+  border: 1px solid #444;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-family: 'Fira Code', monospace;
+}
+
+.robot-dropdown:hover {
+  border-color: #8a2be2;
+}
+
+.robot-dropdown:focus {
+  outline: none;
+  border-color: #6a1db5;
+  box-shadow: 0 0 5px rgba(138, 43, 226, 0.8);
+}
+
+/* Dropdown Arrow Customization */
+.robot-dropdown::-ms-expand {
+  display: none;
+}
+
+.robot-dropdown option {
+  background: #282a36;  /* Dark background */
+  color: #ffffff; /* White text */
+  font-size: 16px;
+  padding: 12px;
+  border-bottom: 1px solid #8a2be2; /* Purple underline */
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* Hover effect for options */
+.robot-dropdown option:hover {
+  background: #6a1db5; /* Deep purple */
+  color: #ffffff;
+}
+
+/* Selected option */
+.robot-dropdown option:checked {
+  background: #8a2be2;
+  font-weight: bold;
+  color: #ffffff;
+}
