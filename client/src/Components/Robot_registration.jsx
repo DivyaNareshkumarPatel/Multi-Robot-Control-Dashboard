@@ -4,7 +4,7 @@ import { robotRegistration } from "../api/api";
 import "../style/robotControl.css";
 
 const RobotRegistration = () => {
-  const [activeTab, setActiveTab] = useState("registration"); // "registration" or "detail"
+  const [activeTab, setActiveTab] = useState("registration");
   const [formData, setFormData] = useState({
     robotName: "",
     robotId: "",
@@ -144,7 +144,7 @@ const styles = {
   },
   submitButton: {
     padding: "12px 25px",
-    backgroundColor: "#9A4DFF",
+    backgroundColor: "#8a2be2",
     color: "#fff",
     border: "none",
     borderRadius: "8px",

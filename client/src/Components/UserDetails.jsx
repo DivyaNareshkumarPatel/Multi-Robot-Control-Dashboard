@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle } from "lucide-react";
 import {userDetails, handleUserPermissionLogin} from '../api/api'
 import '../style/adminDashboard.css';
 
@@ -65,13 +64,13 @@ export default function UserDetails() {
                       className="approve" 
                       onClick={() => handlePermission(user._id, "approve")}
                     >
-                      <CheckCircle className="icon-check" />
+                      <i class="fa-regular fa-circle-check"></i>
                     </button>
                     <button 
                       className="reject" 
                       onClick={() => handlePermission(user._id, "reject")}
                     >
-                      <XCircle className="icon-cross" />
+                      <i class="fa-regular fa-circle-xmark"></i>
                     </button>
                   </td>
                   <td className={user.status === "pending" ? "pending" : user.status === "approved" ? "approved" : "rejected"}>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { User, Cpu } from "lucide-react";
 import "../style/adminDashboard.css";
 import UserDetails from "../Components/UserDetails";
 import RobotRegistration from "../Components/Robot_registration";
@@ -15,14 +14,14 @@ export default function AdminDashboard() {
           className={`icon-container ${active === "user" ? "active" : ""}`}
           onClick={() => setActive("user")}
         >
-          <User className="icon" />
+          <i class="fa-solid fa-user icon"></i>
           {active === "user" && <span className="dot"></span>}
         </div>
         <div
           className={`icon-container ${active === "robotRegistration" ? "active" : ""}`}
           onClick={() => setActive("robotRegistration")}
         >
-          <Cpu className="icon" />
+          <i class="fa-solid fa-robot icon"></i>
           {active === "robotRegistration" && <span className="dot"></span>}
         </div>
         {/* Robot Control Icon */}
@@ -30,7 +29,7 @@ export default function AdminDashboard() {
           className={`icon-container ${active === "robotControl" ? "active" : ""}`}
           onClick={() => setActive("robotControl")}
         >
-          <Cpu className="icon" />
+          <i class="fa-solid fa-bars-progress icon"></i>
           {active === "robotControl" && <span className="dot"></span>}
         </div>
       </div>
