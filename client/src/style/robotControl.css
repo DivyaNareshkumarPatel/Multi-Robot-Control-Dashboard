@@ -166,8 +166,25 @@
   padding: 10px;
 }
 
-.robotRegistrationForm::-webkit-scrollbar {
+.robot-registration-form::-webkit-scrollbar {
   width: 0px;
   height: 0px;
   display: none;
+}
+
+.dashboard-content-robo{
+  width: 90vw;
+}
+
+.icon-edit, .icon-check, .icon-trash-robo{
+  height: 18px;
+  cursor: pointer;
+}
+
+.robot-table input{
+  height: 20px;
+  outline: 0;
+  border: 0;
+  padding: 1px;
+  padding-left: 4px;
 }
