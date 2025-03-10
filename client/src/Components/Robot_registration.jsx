@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RobotDetails from './RobotDetails'
 import { robotRegistration } from "../api/api";
 import "../style/robotControl.css";
 
 const RobotRegistration = () => {
-  const [activeTab, setActiveTab] = useState("registration");
+  const [activeTab, setActiveTab] = useState(localStorage.getItem("robotActiveTab") || "registration");
   const [formData, setFormData] = useState({
     robotName: "",
     robotId: "",
@@ -17,6 +17,10 @@ const RobotRegistration = () => {
 
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("robotActiveTab", activeTab);
+  }, [activeTab]);
 
   const validateForm = () => {
     let newErrors = {};
@@ -73,7 +77,6 @@ const RobotRegistration = () => {
         </div>
       </nav>
 
-      {/* Registration Form */}
       {activeTab === "registration" && (
         <div className="robotRegistration" style={{width:"100%", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
           <h1 style={styles.header}>Robot Registration Form</h1>

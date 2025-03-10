@@ -51,7 +51,7 @@ export const handleUserPermissionLogin = async ({ endpoint, id }) => {
     }
 }
 
-export const robotRegistration = async ({ formData }) => {
+export const robotRegistration = async ( formData ) => {
     try {
         const response = await axios.post(`${url}/api/robot/robots`, formData);
         return response
