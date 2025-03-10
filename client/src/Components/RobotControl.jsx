@@ -40,9 +40,9 @@ export default function RobotControl() {
 
   return (
     <div className="robot-container">
-      <h1 className="title">Robot Control Panel</h1>
+      <h1 className="title" style={{paddingTop:"20px", paddingLeft:"20px"}}>Robot Control Panel</h1>
 
-      <div className="robot-selector">
+      <div className="robot-selector" style={{paddingLeft:"20px"}}>
         <label>Select Robot:</label>
         <select
           className="robot-dropdown"
@@ -61,7 +61,7 @@ export default function RobotControl() {
         </select>
       </div>
 
-      <div className="grid-controls">
+      <div className="grid-controls" style={{marginLeft:"20px", marginRight:"20px"}}>
         <button className="control-btn" onClick={() => handleCommand("Move Forward")}>
           Forward
         </button>

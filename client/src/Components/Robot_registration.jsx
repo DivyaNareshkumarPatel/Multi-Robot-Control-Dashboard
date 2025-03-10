@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {robotRegistration} from '../api/api'
+import '../style/robotControl.css'
 
 const RobotRegistration = () => {
   const [formData, setFormData] = useState({
@@ -105,10 +106,14 @@ const RobotRegistration = () => {
 
   return (
     <div style={styles.container}>
+      <div className="innerNav">
+        <div>Robot Registration</div>
+        <div>Robot Detail</div>
+      </div>
       <h1 style={styles.header}>Robot Registration Form</h1>
       {successMessage && <p style={styles.successMessage}>{successMessage}</p>}
       {errors.general && <p style={styles.errorMessage}>{errors.general}</p>}
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} style={styles.form} className="robotRegistrationForm">
         {Object.entries(formData).map(([key, value]) => (
           <div key={key} style={styles.inputGroup}>
             <label htmlFor={key} style={styles.label}>
@@ -145,34 +150,37 @@ const RobotRegistration = () => {
 const styles = {
   container: {
     width: "100%",
-    padding: "20px",
+    // padding: "20px",
     color: "#fff",
-    overflowY: "scroll",
-    borderRadius: "10px",
+    overflowX:"hidden",
+    // overflowY: "scroll",
+    // borderRadius: "10px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  header: { color: "white", fontSize: "24px", marginBottom: "20px", width:"100%" },
+  header: { color: "white", fontSize: "24px", marginBottom: "20px", width:"100%", marginLeft:"20px" },
   successMessage: { color: "#4CAF50", fontSize: "18px", marginBottom: "10px" },
   errorMessage: { color: "#ff4d4d", fontSize: "14px", marginTop: "5px" },
   form: {
     width: "80%",
-    maxWidth: "600px",
+    maxWidth: "700px",
+    overflowY:"scroll",
     display: "flex",
     flexDirection: "column",
     gap: "15px",
   },
-  inputGroup: { marginBottom: "15px" },
+  inputGroup: { marginBottom: "15px", display:"flex", flexDirection:"column", alignItems:"center" },
   label: {
+    width:"90%",
     display: "block",
     fontSize: "16px",
     color: "white",
     marginBottom: "5px",
   },
   input: {
-    width: "100%",
+    width: "90%",
     padding: "10px",
     backgroundColor: "#191620",
     border: "1px solid white",
@@ -192,6 +200,7 @@ const styles = {
     transition: "background-color 0.3s ease",
     alignSelf: "center",
     width: "90%",
+    marginBottom:"20px"
   },
 };
 

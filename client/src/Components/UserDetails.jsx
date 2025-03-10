@@ -36,7 +36,7 @@ export default function UserDetails() {
   };
 
   return (
-    <div className="dashboard-content">
+    <div className="dashboard-content" style={{padding:"20px"}}>
       <h1>User Permissions</h1>
       {loading ? (
         <p>Loading...</p>
