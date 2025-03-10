@@ -55,7 +55,7 @@
 /* Dashboard Content */
 .dashboard-content {
   flex: 1;
-  padding: 1rem;
+  /* padding: 1rem; */
   background-color: #0A090D;
   display: flex;
   flex-direction: column;
@@ -232,7 +232,7 @@
 /* Dashboard Content */
 .dashboard-content {
   flex: 1;
-  padding: 1rem;
+  /* padding: 1rem; */
   background-color: #0A090D;
   display: flex;
   flex-direction: column;
