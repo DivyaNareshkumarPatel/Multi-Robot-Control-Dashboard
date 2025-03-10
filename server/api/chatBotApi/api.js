@@ -12,18 +12,18 @@ const authenticate = (req, res, next) => {
     next();
 };
 
-router.post("/robots/response", authenticate, async (req, res) => {
+router.post("/robots/command", authenticate, async (req, res) => {
     try {
         const { robotId, response } = req.body;
 
         if (!robotId || !response) {
-            return res.status(400).json({ message: "robotId and response are required" });
+            return res.status(400).json({ message: "robotId and command are required" });
         }
 
         
-        console.log(`Response received: Robot ${robotId} -> ${response}`);
+        console.log(`command received: Robot ${robotId} -> ${response}`);
 
-        res.status(200).json({ message: "Response received successfully", robotId, response });
+        res.status(200).json({ message: "Command received successfully", robotId, response });
     } catch (error) {
 
         console.log(error.message)
