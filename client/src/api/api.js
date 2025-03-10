@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = 'https://multi-robot-control-dashboard.onrender.com' || 'http://localhost:5000';
+const url = 'http://localhost:5000' || 'https://multi-robot-control-dashboard.onrender.com';
 
 export const login = async ({ email, password }) => {
     try {
@@ -85,6 +85,28 @@ export const sendCommands = async ({ robotId, command }) => {
                 },
             }
         );
+        return response
+    }
+    catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error
+    }
+}
+
+export const deleteRobot = async (robotId) => {
+    try {
+        const response = await axios.delete(`${url}/api/robot/robots/${robotId}`);
+        return response
+    }
+    catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error
+    }
+}
+
+export const updateRobot = async (robotId, formData) => {
+    try {
+        const response = await axios.put(`${url}/api/robot/robots/${robotId}`, formData);
         return response
     }
     catch (error) {
