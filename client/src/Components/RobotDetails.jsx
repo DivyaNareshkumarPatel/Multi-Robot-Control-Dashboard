@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { CheckCircle, Edit, Trash2 } from "lucide-react";
 import { getAllRobots, deleteRobot, updateRobot } from "../api/api";
 import "../style/adminDashboard.css";
 import "../style/robotControl.css";
@@ -190,7 +189,7 @@ export default function RobotDetails() {
                   <td style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center" }}>
                     {robot._id === editRobot ? (
                       <button className="approve" onClick={handleUpdate}>
-                        <CheckCircle className="icon-check" />
+                        <i class="fa-regular fa-circle-check icon-check"></i>
                       </button>
                     ) : (
                       <button
@@ -198,11 +197,11 @@ export default function RobotDetails() {
                         className="edit"
                         onClick={() => handleEdit(robot)}
                       >
-                        <Edit className="icon-edit" style={{ color: "white" }} />
+                        <i class="fa-solid fa-pen" style={{color:"white"}}></i>
                       </button>
                     )}
                     <button className="reject" onClick={() => handleDelete(robot._id)}>
-                      <Trash2 className="icon-trash-robo" />
+                      <i class="fa-solid fa-trash icon-trash-robo"></i>
                     </button>
                   </td>
                 </tr>
