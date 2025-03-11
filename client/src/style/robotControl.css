@@ -21,7 +21,6 @@
 
 .control-btn:hover {
   transform: scale(1.01);
-  /* box-shadow: 2px 2px 2px #6a1db5, -2px -2px 2px #6a1db5; */
 }
 
 .control-terminal {
@@ -29,10 +28,7 @@
   position: absolute;
   bottom: 0;
   width: 94.5%;
-  /* max-width: 800px; */
   background-color: #1e1e1e;
-  /* border-radius: 8px; */
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
   font-family: 'Fira Code', monospace;
   font-size: 14px;
   padding: 10px;
@@ -53,7 +49,8 @@
 }
 
 .log-container {
-  height: 200px;
+  height: 100%;
+  overflow: scroll;
   overflow-y: auto;
   background-color: #1e1e1e;
   padding: 10px;
@@ -64,7 +61,6 @@
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Command logs with cursor effect */
 .log-container p {
   margin: 5px 0;
   white-space: pre-wrap;
@@ -72,7 +68,6 @@
   animation: blink-cursor 1s infinite;
 }
 
-/* Scrollbar for logs */
 .log-container::-webkit-scrollbar {
   width: 5px;
 }
@@ -103,7 +98,7 @@
   background-color: #252526;
   color: #ffffff;
   border: 1px solid #444;
-  padding: 10px;
+  padding: 5px;
   font-size: 14px;
   border-radius: 5px;
   cursor: pointer;
@@ -121,31 +116,24 @@
   box-shadow: 0 0 5px rgba(138, 43, 226, 0.8);
 }
 
-/* Dropdown Arrow Customization */
 .robot-dropdown::-ms-expand {
   display: none;
 }
 
 .robot-dropdown option {
   background: #282a36;
-  /* Dark background */
   color: #ffffff;
-  /* White text */
   font-size: 16px;
   padding: 12px;
   border-bottom: 1px solid #8a2be2;
-  /* Purple underline */
   transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-/* Hover effect for options */
 .robot-dropdown option:hover {
   background: #6a1db5;
-  /* Deep purple */
   color: #ffffff;
 }
 
-/* Selected option */
 .robot-dropdown option:checked {
   background: #8a2be2;
   font-weight: bold;
@@ -187,4 +175,118 @@
   border: 0;
   padding: 1px;
   padding-left: 4px;
+}
+
+.robot-vision-container {
+  height: 100%;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background-color: #1e1e1e;
+}
+
+.robot-camera,
+.robot-mapping {
+  flex: 1;
+  background-color: #252526;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.camera-feed img,
+.mapping-area img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.api-box{
+  /* background-color: white; */
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  height: 80%;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner-api{
+  background-color: white;
+  width: 500px;
+  /* height: 100px; */
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.api-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-icon {
+  font-size: 15px;
+  cursor: pointer;
+  color: black;
+  transition: 0.3s ease;
+}
+
+.close-icon:hover {
+  color: #8a2be2;
+}
+
+.api-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  letter-spacing: 1px;
+}
+
+.api-key {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eye-icon {
+  font-size: 15px;
+  cursor: pointer;
+  color: black;
+  margin-left: 10px;
+  transition: 0.3s ease;
+}
+
+.eye-icon:hover {
+  color: #8a2be2;
+}
+
+.api-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.copy-icon {
+  font-size: 15px;
+  cursor: pointer;
+  color: black;
+  transition: 0.3s ease;
+}
+
+.copy-icon:hover {
+  color: #8a2be2;
+}
+
+.fa-check {
+  color: #8a2be2;
 }

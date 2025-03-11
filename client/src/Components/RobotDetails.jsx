@@ -17,6 +17,7 @@ export default function RobotDetails() {
     rom: "",
     manufacturer: "",
     yearOfManufacture: "",
+    apikey: "",
   });
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function RobotDetails() {
   const handleEdit = (robot) => {
     setEditRobot(robot._id);
     setRobotData({ ...robot });
-    setValidationError(null); // Reset validation error when editing
+    setValidationError(null);
   };
 
   const handleUpdate = async () => {
@@ -52,7 +53,9 @@ export default function RobotDetails() {
     try {
       await updateRobot(editRobot, robotData);
       setRobots(
-        robots.map((robot) => (robot._id === editRobot ? { ...robot, ...robotData } : robot))
+        robots.map((robot) =>
+          robot._id === editRobot ? { ...robot, ...robotData } : robot
+        )
       );
       setEditRobot(null);
       setValidationError(null);
@@ -70,6 +73,19 @@ export default function RobotDetails() {
     }
   };
 
+  const [isVisible, setIsVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText("xyz");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 60000);
+  };
+
   return (
     <div className="dashboard-content dashboard-content-robo">
       {loading ? (
@@ -78,7 +94,11 @@ export default function RobotDetails() {
         <p>{error}</p>
       ) : (
         <div className="table-container robot-table">
-          {validationError && <div className={`messageWrapper error visible`}>{validationError}</div>}
+          {validationError && (
+            <div className={`messageWrapper error visible`}>
+              {validationError}
+            </div>
+          )}
           <table className="user-table">
             <thead>
               <tr>
@@ -89,6 +109,7 @@ export default function RobotDetails() {
                 <th>ROM (GB)</th>
                 <th>Manufacturer</th>
                 <th>Year of Manufacture</th>
+                <th>Api Key</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -101,7 +122,10 @@ export default function RobotDetails() {
                         type="text"
                         value={robotData.robotName}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, robotName: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            robotName: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -114,7 +138,10 @@ export default function RobotDetails() {
                         type="text"
                         value={robotData.robotId}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, robotId: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            robotId: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -166,7 +193,10 @@ export default function RobotDetails() {
                         type="text"
                         value={robotData.manufacturer}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, manufacturer: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            manufacturer: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -179,28 +209,50 @@ export default function RobotDetails() {
                         type="number"
                         value={robotData.yearOfManufacture}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, yearOfManufacture: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            yearOfManufacture: e.target.value,
+                          })
                         }
                       />
                     ) : (
                       robot.yearOfManufacture
                     )}
                   </td>
-                  <td style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center" }}>
+                  <td style={{ cursor: "pointer" }}>
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </td>
+                  <td
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-evenly",
+                      alignItems: "center",
+                    }}
+                  >
                     {robot._id === editRobot ? (
                       <button className="approve" onClick={handleUpdate}>
                         <i class="fa-regular fa-circle-check icon-check"></i>
                       </button>
                     ) : (
                       <button
-                        style={{ background: "transparent", border: "none", outline: "none" }}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          outline: "none",
+                        }}
                         className="edit"
                         onClick={() => handleEdit(robot)}
                       >
-                        <i class="fa-solid fa-pen" style={{color:"white"}}></i>
+                        <i
+                          class="fa-solid fa-pen"
+                          style={{ color: "white" }}
+                        ></i>
                       </button>
                     )}
-                    <button className="reject" onClick={() => handleDelete(robot._id)}>
+                    <button
+                      className="reject"
+                      onClick={() => handleDelete(robot._id)}
+                    >
                       <i class="fa-solid fa-trash icon-trash-robo"></i>
                     </button>
                   </td>
@@ -210,6 +262,32 @@ export default function RobotDetails() {
           </table>
         </div>
       )}
+      {/* <div className="api-box">
+        <div className="inner-api">
+          <div className="api-header">
+            <i className="fa-solid fa-xmark close-icon"></i>
+          </div>
+          <div className="api-content">
+            <span className="api-key">
+              {isVisible ? "xyz" : "•".repeat(16)}
+            </span>
+            <div className="api-icons">
+              <i
+                className={`fa-solid ${
+                  isVisible ? "fa-eye-slash" : "fa-eye"
+                } eye-icon`}
+                onClick={toggleVisibility}
+              ></i>
+              <i
+                className={`fa-solid ${
+                  copied ? "fa-check" : "fa-copy"
+                } copy-icon`}
+                onClick={handleCopy}
+              ></i>
+            </div>
+          </div>
+        </div>
+      </div> */}
     </div>
   );
 }
