@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../style/adminDashboard.css";
 import UserDetails from "../Components/UserDetails";
 import RobotRegistration from "../Components/Robot_registration";
-import RobotControl from "../Components/RobotControl";
+import RobotTracking from "../Components/RobotTracking";
 
 export default function AdminDashboard() {
   const [active, setActive] = useState(() => {
@@ -30,20 +30,19 @@ export default function AdminDashboard() {
           <i className="fa-solid fa-robot icon"></i>
           {active === "robotRegistration" && <span className="dot"></span>}
         </div>
-        {/* Robot Control Icon */}
         <div
-          className={`icon-container ${active === "robotControl" ? "active" : ""}`}
-          onClick={() => setActive("robotControl")}
+          className={`icon-container ${active === "robotTracking" ? "active" : ""}`}
+          onClick={() => setActive("robotTracking")}
         >
           <i className="fa-solid fa-bars-progress icon"></i>
-          {active === "robotControl" && <span className="dot"></span>}
+          {active === "robotTracking" && <span className="dot"></span>}
         </div>
       </div>
 
       <div className="dashboard-content">
         {active === "user" && <UserDetails />}
         {active === "robotRegistration" && <RobotRegistration />}
-        {active === "robotControl" && <RobotControl />}
+        {active === "robotTracking" && <RobotTracking />}
       </div>
     </div>
   );
