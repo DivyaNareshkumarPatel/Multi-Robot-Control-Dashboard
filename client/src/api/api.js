@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = 'http://localhost:5000' || 'https://multi-robot-control-dashboard.onrender.com';
+const url =  'https://multi-robot-control-dashboard.onrender.com' || 'http://localhost:5000';
 
 export const login = async ({ email, password }) => {
     try {
