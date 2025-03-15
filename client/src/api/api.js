@@ -10,7 +10,7 @@ export const login = async ({ email, password }) => {
         console.error("Error logging in:", error.response ? error.response.data : error.message);
         return error;
     }
-};
+}; 
 
 export const signup = async ({ name, email, password, role }) => {
     try {
