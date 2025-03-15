@@ -6,7 +6,7 @@ import RobotTracking from "../Components/RobotTracking";
 
 export default function AdminDashboard() {
   const [active, setActive] = useState(() => {
-    return localStorage.getItem("activeTab") || "user"; // Get the last active tab from localStorage or default to "user"
+    return localStorage.getItem("activeTab") || "user";
   });
 
   useEffect(() => {

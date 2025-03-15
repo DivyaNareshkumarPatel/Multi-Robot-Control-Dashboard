@@ -1,37 +1,87 @@
+import { useState } from "react";
 import "../style/robotControl.css";
 
 export default function RobotControl() {
+  const [expandedSection, setExpandedSection] = useState(null);
+
+  const toggleSection = (section) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
+
   return (
     <div className="robot-container">
-      <div className="grid-controls" style={{marginLeft:"20px", marginRight:"20px"}}>
-        <button className="control-btn">
-          Forward
-        </button>
-        <button className="control-btn">
-          Left
-        </button>
-        <button className="control-btn stop-btn">
-          Stop
-        </button>
-        <button className="control-btn">
-          Right
-        </button>
-        <button className="control-btn">
-          Backward
-        </button>
-        <button className="control-btn">
-          Rotate Left
-        </button>
-        <button className="control-btn">
-          Rotate Right
-        </button>
-        <button className="control-btn speed-up">
-          Speed Up
-        </button>
-        <button className="control-btn slow-down">
-          Slow Down
-        </button>
-      </div>
+      {[
+        {
+          title: "Hands",
+          controls: [
+            "Hands Up",
+            "Right Hand Up",
+            "Left Hand Up",
+            "Hands Down",
+            "Hand Shake",
+            "Right Hand Down",
+            "Left Hand Down",
+          ],
+        },
+        {
+          title: "Head",
+          controls: ["Head Forward", "Head Right", "Head Left"],
+        },
+        {
+          title: "Chest",
+          controls: ["Chest Forward", "Chest Right", "Chest Left"],
+        },
+        {
+          title: "Base Motors",
+          controls: [
+            "Move Forward",
+            "Move Backward",
+            "Stop",
+            "Move Right",
+            "Move Left",
+            "Move Right Motor",
+            "Move Left Motor",
+            "Move Right Stop",
+            "Move Left Stop",
+          ],
+        },
+        {
+          title: "Talking",
+          controls: [
+            "Talking",
+          ],
+        },
+      ].map((section) => (
+        <div
+          key={section.title}
+          className="control-section"
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            marginBottom: "10px",
+          }}
+        >
+          <button
+            className="expand-btn"
+            onClick={() => toggleSection(section.title)}
+          >
+            <div>{section.title}</div>
+            <div>{expandedSection === section.title ? "-" : "+"}</div>
+          </button>
+          {expandedSection === section.title && (
+            <div className="grid-controls">
+              {section.controls.map((control) => (
+                <button key={control} className="control-btn">
+                  {control}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

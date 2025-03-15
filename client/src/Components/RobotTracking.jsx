@@ -12,8 +12,7 @@ export default function RobotTracking() {
 
   useEffect(() => {
     fetchRobots();
-  }, []); // Run only once on mount
-
+  }, []);
   const fetchRobots = async () => {
     try {
       const response = await getAllRobots();
@@ -76,7 +75,7 @@ export default function RobotTracking() {
         </select>
       </div>
 
-      <div className="content" style={{ height: `calc(100vh - ${terminalHeight + 120}px)` }}>
+      <div className="content" style={{ height: `calc(100vh - ${terminalHeight + 160}px)`, overflowY:"scroll" }}>
         {activeTab === "vision" ? <RobotVision /> : <RobotControl />}
       </div>
 
