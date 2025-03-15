@@ -1,11 +1,53 @@
+.robot-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 .grid-controls {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+  padding: 15px;
+  background-color: #282a36;
+  /* border-radius: 5px; */
+  width: 93%;
+  margin-left: 30px;
+  margin-right: 30px;
+  transition: all 0.3s ease-in-out;
+}
+.expand-btn {
+  width: 95%;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  background-color: #282a36;
+  
+  color: white;
+  border: none;
+  /* border-radius: 5px; */
+  /* margin-bottom: 10px; */
+  transition: background 0.3s ease;
+}
+
+/* .expand-btn:hover {
+  background-color: #3A3B3C;
+} */
+
+/* .grid-controls {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   padding: 15px;
   background-color: #282a36;
   border-radius: 5px;
-}
+  transition: all 0.3s ease-in-out;
+} */
+
 
 .control-btn {
   background: linear-gradient(145deg, #8a2be2, #7a22cc);
@@ -289,4 +331,8 @@
 
 .fa-check {
   color: #8a2be2;
+}
+
+.content::-webkit-scrollbar{
+  width: 0;
 }
