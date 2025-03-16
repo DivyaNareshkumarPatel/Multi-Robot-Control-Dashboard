@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = 'https://multi-robot-control-dashboard.onrender.com' || 'http://localhost:5000';
+const url = 'http://localhost:5000' || 'https://multi-robot-control-dashboard.onrender.com';
 
 export const login = async ({ email, password }) => {
     try {
@@ -10,16 +10,16 @@ export const login = async ({ email, password }) => {
         console.error("Error logging in:", error.response ? error.response.data : error.message);
         return error;
     }
-}; 
+};
 
-export const signup = async ({ name, email, password, role }) => {
+export const signup = async ({ name, username, email, password, role }) => {
     try {
         const response = await fetch(`${url}/api/users/signup`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ name, email, password, role }),
+            body: JSON.stringify({ name, username, email, password, role }),
         });
         return response;
     }
@@ -51,7 +51,7 @@ export const handleUserPermissionLogin = async ({ endpoint, id }) => {
     }
 }
 
-export const robotRegistration = async ( formData ) => {
+export const robotRegistration = async (formData) => {
     try {
         const response = await axios.post(`${url}/api/robot/robots`, formData);
         return response
@@ -114,3 +114,38 @@ export const updateRobot = async (robotId, formData) => {
         return error
     }
 }
+
+export const assignRobotToUser = async ( userId, robotId ) => {
+    try {
+        console.log("API Call - Assign Robot:", userId, robotId);
+        const response = await axios.post(`${url}/api/userRobot/assignRobot`, { userId, robotId });
+        return response;
+    } catch (error) {
+        console.error("Error assigning robot:", error.response ? error.response.data : error.message);
+        return error.response || { status: 500, data: { message: "Server error" } };
+    }
+};
+
+
+export const deassignRobotFromUser = async (userId, robotId) => {
+    try {
+        const response = await axios.post(`${url}/api/userRobot/deassignRobot`, { userId, robotId });
+        return response;
+    }
+    catch (error) {
+        console.error("Error deassigning robot:", error.response ? error.response.data : error.message);
+        return error;
+    }
+};
+
+export const getAssignedRobots = async (userId) => {
+    try {
+        console.log(`Fetching from: ${url}/api/userRobot/getAssignedRobots/${userId}`);
+        const response = await axios.get(`${url}/api/userRobot/getAssignedRobots/${userId}`);
+        return response;
+    }
+    catch (error) {
+        console.error("Error fetching assigned robots:", error.response ? error.response.data : error.message);
+        return error;
+    }
+};

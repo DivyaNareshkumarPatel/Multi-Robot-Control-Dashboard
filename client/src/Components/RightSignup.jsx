@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {signup} from '../api/api'
+import { signup } from "../api/api";
 import "../style/login.css";
 
 export default function RightSignup() {
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("user");
 
   const [nameError, setNameError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
@@ -21,11 +23,18 @@ export default function RightSignup() {
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validateName = (name) => /^[A-Za-z ]{3,}$/.test(name);
+  const validateUsername = (username) => /^[a-zA-Z0-9_]{3,15}$/.test(username);
 
   const handleNameChange = (e) => {
     const value = e.target.value;
     setName(value);
     setNameError(validateName(value) ? "" : "Name must be at least 3 characters long and contain only letters and spaces");
+  };
+
+  const handleUsernameChange = (e) => {
+    const value = e.target.value;
+    setUsername(value);
+    setUsernameError(validateUsername(value) ? "" : "Username must be 3-15 characters long and contain only letters, numbers, or underscores");
   };
 
   const handleEmailChange = (e) => {
@@ -57,7 +66,7 @@ export default function RightSignup() {
 
     let hasError = false;
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !username || !email || !password || !confirmPassword) {
       setMessage("All fields are required");
       setMessageType("error");
       hasError = true;
@@ -65,6 +74,11 @@ export default function RightSignup() {
 
     if (!validateName(name)) {
       setNameError("Name must be at least 3 characters long and contain only letters and spaces");
+      hasError = true;
+    }
+
+    if (!validateUsername(username)) {
+      setUsernameError("Username must be 3-15 characters long and contain only letters, numbers, or underscores");
       hasError = true;
     }
 
@@ -86,8 +100,8 @@ export default function RightSignup() {
     if (hasError) return;
 
     try {
-      const response = await signup({name, email, password, role})
-
+      const response = await signup({ name, username, email, password, role });
+      console.log(username); 
       const data = await response.json();
 
       if (!response.ok) {
@@ -114,6 +128,10 @@ export default function RightSignup() {
         <div className={`inputWrapper ${nameError ? "error" : ""}`}>
           <input type="text" placeholder="Full Name" className="loginInput" value={name} onChange={handleNameChange} />
           {nameError && <div className="errorText">{nameError}</div>}
+        </div>
+        <div className={`inputWrapper ${usernameError ? "error" : ""}`}>
+          <input type="text" placeholder="Username" className="loginInput" value={username} onChange={handleUsernameChange} />
+          {usernameError && <div className="errorText">{usernameError}</div>}
         </div>
         <div className={`inputWrapper ${emailError ? "error" : ""}`}>
           <input type="text" placeholder="Email address" className="loginInput" value={email} onChange={handleEmailChange} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../style/adminDashboard.css";
-import UserDetails from "../Components/UserDetails";
+import User from "../Components/User";
 import RobotRegistration from "../Components/Robot_registration";
 import RobotTracking from "../Components/RobotTracking";
 
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="dashboard-content">
-        {active === "user" && <UserDetails />}
+        {active === "user" && <User />}
         {active === "robotRegistration" && <RobotRegistration />}
         {active === "robotTracking" && <RobotTracking />}
       </div>

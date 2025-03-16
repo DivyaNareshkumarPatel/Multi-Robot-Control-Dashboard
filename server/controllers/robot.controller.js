@@ -47,9 +47,15 @@ const deleteRobot = async (req, res) => {
   try {
     const robot = await Robot.findByIdAndDelete(req.params.id);
     if (!robot) {
-      return res.status(404).json({ message: 'Robot not found' });
+      return res.status(404).json({ message: "Robot not found" });
     }
-    res.status(200).json({ message: 'Robot deleted successfully!' });
+
+    await User.updateMany(
+      { robots: robot._id },
+      { $pull: { robots: robot._id } }
+    );
+
+    res.status(200).json({ message: "Robot deleted successfully and removed from users!" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
