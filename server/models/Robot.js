@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
-const crypto = require('crypto');
+const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 const RobotSchema = new mongoose.Schema(
   {
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     robotName: {
       type: String,
       required: true,
@@ -42,11 +43,11 @@ const RobotSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      default: () => crypto.randomBytes(32).toString('hex'),
+      default: () => crypto.randomBytes(32).toString("hex"),
     },
   },
   { timestamps: true }
 );
 
-const Robot = mongoose.model('Robot', RobotSchema);
+const Robot = mongoose.model("Robot", RobotSchema);
 module.exports = Robot;

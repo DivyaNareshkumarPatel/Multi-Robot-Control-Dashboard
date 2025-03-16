@@ -1,42 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import {userDetails, handleUserPermissionLogin} from '../api/api'
+import { userDetails, handleUserPermissionLogin } from '../api/api';
 import '../style/adminDashboard.css';
 
 export default function UserDetails() {
-  const [users, setUsers] = useState([]); // State to store users
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const [error, setError] = useState(null); // State to handle errors
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // Fetch users from the backend
-        const response = await userDetails()
-        setUsers(response.data); // Set the users in the state
-        setLoading(false); // Set loading to false after fetching the data
+        const response = await userDetails();
+        setUsers(response.data);
+        setLoading(false);
       } catch (err) {
         setError("Error fetching users");
         setLoading(false);
       }
     };
 
-    fetchUsers(); // Call the fetch function on component mount
+    fetchUsers();
   }, []);
 
   const handlePermission = async (id, action) => {
     try {
       const endpoint = action === "approve" ? "/approve" : "/reject";
-      handleUserPermissionLogin({endpoint, id})
+      handleUserPermissionLogin({ endpoint, id });
 
-      setUsers(users.map(user => user._id === id ? { ...user, status: action === "approve" ? "approved" : "rejected" } : user));
+      setUsers(users.map(user =>
+        user._id === id ? { ...user, status: action === "approve" ? "approved" : "rejected" } : user
+      ));
     } catch (err) {
       setError("Error updating permission");
     }
   };
 
   return (
-    <div className="dashboard-content" style={{padding:"20px"}}>
-      <h1>User Permissions</h1>
+    <div className="dashboard-content" style={{ paddingLeft: "20px", paddingRight: "20px" }}>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -47,6 +47,7 @@ export default function UserDetails() {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Username</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Actions</th>
@@ -57,24 +58,25 @@ export default function UserDetails() {
               {users.map(user => (
                 <tr key={user._id}>
                   <td>{user.name}</td>
+                  <td>{user.username}</td> {/* Displaying Username */}
                   <td>{user.email}</td>
                   <td>{user.role}</td>
                   <td className="permission-buttons">
-                    <button 
-                      className="approve" 
+                    <button
+                      className="approve"
                       onClick={() => handlePermission(user._id, "approve")}
                     >
-                      <i class="fa-regular fa-circle-check"></i>
+                      <i className="fa-regular fa-circle-check"></i>
                     </button>
-                    <button 
-                      className="reject" 
+                    <button
+                      className="reject"
                       onClick={() => handlePermission(user._id, "reject")}
                     >
-                      <i class="fa-regular fa-circle-xmark"></i>
+                      <i className="fa-regular fa-circle-xmark"></i>
                     </button>
                   </td>
-                  <td className={user.status === "pending" ? "pending" : user.status === "approved" ? "approved" : "rejected"}>
-                    {user.status === "pending" ? "Pending" : user.status === "approved" ? "Approved" : "Rejected"}
+                  <td className={user.status}>
+                    {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                   </td>
                 </tr>
               ))}
