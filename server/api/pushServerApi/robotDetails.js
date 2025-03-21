@@ -1,5 +1,6 @@
 const express = require('express');
 const Robot = require('../../models/Robot');
+const { sendCommandToRobot, getConnectedRobots } = require('../../websocket/robotSocketServer');
 
 const router = express.Router();
 const API_KEY = 'push_server_robot_authentication';
@@ -12,12 +13,14 @@ const authenticate = (req, res, next) => {
     next();
 };
 
-router.get('/robots', authenticate, async (req, res) => {
+// Get all connected robots
+router.get('/robots', (req, res) => {
     try {
-        const robots = await Robot.find();
-        res.json(robots);
+        const robots = getConnectedRobots();
+        res.json({ success: true, robots });
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        console.error('Error getting connected robots:', error);
+        res.status(500).json({ success: false, message: 'Failed to get connected robots', error: error.message });
     }
 });
 
@@ -33,41 +36,50 @@ router.get('/robots/:robotId', authenticate, async (req, res) => {
     }
 });
 
-router.post("/robots/commands", authenticate, async (req, res) => {
+// Send command to a robot
+router.post('/robots/:robotId/command', async (req, res) => {
+    const { robotId } = req.params;
+    const { command } = req.body;
+    
+    if (!command) {
+        return res.status(400).json({ success: false, message: 'Command is required' });
+    }
+    
     try {
-        const { robotId, command } = req.body;
-
-        if (!robotId || !command) {
-            return res.status(400).json({ message: "robotId and command are required" });
-        }
-
-        console.log(`Command received: Robot ${robotId} -> ${command}`);
-
-        res.status(200).json({ message: "Command sent successfully", robotId, command });
+        const result = await sendCommandToRobot(robotId, command);
+        res.json({ success: true, message: `Command sent to robot ${robotId}`, result });
     } catch (error) {
-        res.status(500).json({ message: "Server Error", error: error.message });
+        console.error(`Error sending command to robot ${robotId}:`, error);
+        res.status(500).json({ success: false, message: 'Failed to send command', error: error.message });
     }
 });
 
-router.post("/robots/response", authenticate, async (req, res) => {
+// Endpoint for chatbot to send commands to robots
+router.post('/chatbot/command', async (req, res) => {
+    const { robotId, command } = req.body;
+    
+    if (!robotId || !command) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Both robotId and command are required' 
+        });
+    }
+    
     try {
-        const { robotId, response } = req.body;
-
-        if (!robotId || !response) {
-            return res.status(400).json({ message: "robotId and response are required" });
-        }
-
-        
-        console.log(`Response received: Robot ${robotId} -> ${response}`);
-
-        res.status(200).json({ message: "Response received successfully", robotId, response });
+        const result = await sendCommandToRobot(robotId, command, 'chatbot');
+        res.json({ 
+            success: true, 
+            message: `Command from chatbot sent to robot ${robotId}`, 
+            result 
+        });
     } catch (error) {
-
-        console.log(error.message)
-
-        res.status(500).json({ message: "Server Error", error: error.message });
+        console.error(`Error sending chatbot command to robot ${robotId}:`, error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to send chatbot command', 
+            error: error.message 
+        });
     }
 });
-
 
 module.exports = router;

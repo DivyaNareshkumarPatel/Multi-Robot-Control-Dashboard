@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import RobotControl from "./RobotControl";
 import RobotVision from "./RobotVision";
 import { getAllRobots, sendCommands } from "../api/api";
+import webSocketService from "../services/WebSocketService";
 
 export default function RobotTracking() {
   const [logs, setLogs] = useState([]);
@@ -9,10 +10,75 @@ export default function RobotTracking() {
   const [robots, setRobots] = useState([]);
   const [activeTab, setActiveTab] = useState(localStorage.getItem("RobotActiveTab") || "vision");
   const [terminalHeight, setTerminalHeight] = useState(160);
+  const [isConnected, setIsConnected] = useState(false);
 
+  // Connect to WebSocket when component mounts
+  useEffect(() => {
+    const connectWebSocket = async () => {
+      try {
+        await webSocketService.connect();
+        setIsConnected(true);
+        addLog(`[WebSocket] Connected successfully`);
+      } catch (error) {
+        console.error('Failed to connect to WebSocket server:', error);
+        setIsConnected(false);
+        addLog(`[WebSocket] Connection failed, using API fallback`);
+      }
+    };
+
+    connectWebSocket();
+
+    // Clean up WebSocket connection when component unmounts
+    return () => {
+      webSocketService.disconnect();
+    };
+  }, []);
+
+  // Set up WebSocket event listeners
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Listen for robot list updates
+    const robotListUnsubscribe = webSocketService.addRobotListListener((wsRobots) => {
+      // Update connection status for robots that are connected via WebSocket
+      addLog(`[WebSocket] Received list of ${wsRobots.length} connected robots`);
+      
+      // Option: Merge WebSocket robots with database robots if needed
+      // This could be implemented if you want to show WebSocket-only robots
+    });
+
+    // Listen for status updates
+    const statusUnsubscribe = webSocketService.addStatusListener((status, data) => {
+      if (status === 'disconnected') {
+        setIsConnected(false);
+        addLog(`[WebSocket] Disconnected, using API fallback`);
+      } else if (status === 'robot_update') {
+        addLog(`[WebSocket] Robot ${data.robotId} ${data.status}`);
+      } else if (status === 'command_status') {
+        addLog(`[WebSocket] Robot ${data.robotId} completed: ${data.command}`);
+      }
+    });
+
+    // Listen for other messages
+    const messageUnsubscribe = webSocketService.addMessageListener((message) => {
+      if (message.type === 'ack' || message.type === 'error') {
+        addLog(`[WebSocket] ${message.message || JSON.stringify(message)}`);
+      }
+    });
+
+    // Clean up listeners when component unmounts
+    return () => {
+      robotListUnsubscribe();
+      statusUnsubscribe();
+      messageUnsubscribe();
+    };
+  }, [isConnected]);
+
+  // Load robots from database
   useEffect(() => {
     fetchRobots();
   }, []);
+
   const fetchRobots = async () => {
     try {
       const response = await getAllRobots();
@@ -22,21 +88,57 @@ export default function RobotTracking() {
       }
     } catch (error) {
       console.error("Error fetching robots:", error);
+      addLog(`[Error] Failed to fetch robots from database`);
     }
   };
 
+  // Add log entry with timestamp
+  const addLog = (message) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setLogs((prevLogs) => [`[${timestamp}] ${message}`, ...prevLogs]);
+  };
+
+  // Handle command sending with WebSocket support
   const handleCommand = async (command) => {
     if (!selectedRobot) {
-      alert("Please select a robot first.");
+      addLog(`[Error] Please select a robot first`);
       return;
     }
 
-    setLogs((prevLogs) => [`> [Robot ${selectedRobot}] ${command}`, ...prevLogs]);
+    addLog(`> [Robot ${selectedRobot}] ${command}`);
 
     try {
-      await sendCommands({ robotId: selectedRobot, command });
+      // Try WebSocket first if connected
+      if (isConnected) {
+        const sent = webSocketService.sendCommand(selectedRobot, command);
+        if (!sent) {
+          addLog(`[WebSocket] Not ready, falling back to API`);
+          await sendViaAPI(selectedRobot, command);
+        } else {
+          addLog(`[WebSocket] Command sent to robot ${selectedRobot}`);
+        }
+      } else {
+        // Otherwise use API
+        await sendViaAPI(selectedRobot, command);
+      }
     } catch (error) {
       console.error("Error sending command:", error);
+      addLog(`[Error] Failed to send command: ${error.message}`);
+    }
+  };
+
+  // Send command via API
+  const sendViaAPI = async (robotId, command) => {
+    try {
+      const response = await sendCommands({ robotId, command });
+      if (response.status === 200) {
+        addLog(`[API] Command sent to ${robotId}`);
+      } else {
+        addLog(`[API Error] ${response.data?.message || 'Failed to send command'}`);
+      }
+    } catch (error) {
+      console.error('API command error:', error);
+      addLog(`[API Error] ${error.message}`);
     }
   };
 
@@ -60,13 +162,18 @@ export default function RobotTracking() {
         {activeTab === "vision" ? "Robot Vision and Mapping" : "Robot Control Panel"}
       </h1>
 
+      {/* WebSocket connection status */}
+      <div className={`connection-indicator ${isConnected ? 'connected' : 'disconnected'}`} style={{ margin: "0 20px 10px" }}>
+        {isConnected ? "WebSocket Connected ✓" : "WebSocket Disconnected ✗"}
+      </div>
+
       <div className="robot-selector" style={{ paddingLeft: "20px" }}>
         <label>Select Robot:</label>
         <select className="robot-dropdown" value={selectedRobot} onChange={(e) => setSelectedRobot(e.target.value)}>
           {robots.length > 0 ? (
-            robots.map((robot, index) => (
-              <option key={robot.robotId || index} value={robot.robotId}>
-                {`${robot.robotId}`}
+            robots.map((robot) => (
+              <option key={robot._id} value={robot.robotId}>
+                {robot.robotName || robot.robotId} {isConnected ? "- WebSocket Available" : ""}
               </option>
             ))
           ) : (
@@ -76,7 +183,11 @@ export default function RobotTracking() {
       </div>
 
       <div className="content" style={{ height: `calc(100vh - ${terminalHeight + 160}px)`, overflowY:"scroll" }}>
-        {activeTab === "vision" ? <RobotVision /> : <RobotControl />}
+        {activeTab === "vision" ? (
+          <RobotVision />
+        ) : (
+          <RobotControl onSendCommand={handleCommand} />
+        )}
       </div>
 
       <div className="control-terminal" style={{ height: `${terminalHeight}px`, maxHeight: "99vh" }}>
@@ -120,6 +231,9 @@ export default function RobotTracking() {
         .drag-icon {
           font-size: 10px;
           color: white;
+        }
+        .active-tab {
+          background-color: #6a1db5;
         }
       `}</style>
     </div>
