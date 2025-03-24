@@ -1,15 +1,17 @@
 import { useState } from "react";
 import "../style/robotControl.css";
 
-export default function RobotControl() {
+export default function RobotControl({ onSendCommand }) {
   const [expandedSection, setExpandedSection] = useState(null);
 
+  // Toggle section expansion
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
 
   return (
     <div className="robot-container">
+      {/* Control sections */}
       {[
         {
           title: "Hands",
@@ -74,7 +76,11 @@ export default function RobotControl() {
           {expandedSection === section.title && (
             <div className="grid-controls">
               {section.controls.map((control) => (
-                <button key={control} className="control-btn">
+                <button 
+                  key={control} 
+                  className="control-btn"
+                  onClick={() => onSendCommand(control)}
+                >
                   {control}
                 </button>
               ))}
