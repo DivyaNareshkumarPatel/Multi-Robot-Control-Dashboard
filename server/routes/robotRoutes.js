@@ -6,7 +6,8 @@ const {
   getRobotById,
   updateRobot,
   deleteRobot,
-  sendCommands
+  sendCommands,
+  getCommandHistory
 } = require('../controllers/robot.controller');
 
 router.post('/robots', createRobot);
@@ -20,5 +21,7 @@ router.put('/robots/:id', updateRobot);
 router.delete('/robots/:id', deleteRobot);
 
 router.post('/robots/commands', sendCommands);
+
+router.get('/robots/:robotId/commands', getCommandHistory);
 
 module.exports = router;
