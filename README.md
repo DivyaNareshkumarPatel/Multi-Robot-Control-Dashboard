@@ -6,7 +6,6 @@ A web-based dashboard for monitoring and controlling multiple robots in real-tim
 
 The Multi-Robot Control Dashboard is a full-stack web application that allows users to manage and communicate with multiple robots from a single interface. The system uses WebSockets to enable real-time bidirectional communication between the dashboard and connected robots.
 
-![Dashboard Concept](https://via.placeholder.com/800x400?text=Robot+Control+Dashboard)
 
 ## ✨ Key Features
 
