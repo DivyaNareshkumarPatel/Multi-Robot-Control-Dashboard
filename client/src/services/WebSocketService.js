@@ -9,7 +9,7 @@ class WebSocketService {
         this.statusListeners = [];
         this.robotListListeners = [];
         this.messageQueue = []; // Queue for messages when not connected
-        this.serverUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:5000';
+        this.serverUrl = process.env.REACT_APP_WS_URL || 'ws://multi-robot-control-dashboard.onrender.com';
     }
 
     connect() {

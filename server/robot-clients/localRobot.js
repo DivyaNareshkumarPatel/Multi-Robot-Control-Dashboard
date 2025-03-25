@@ -4,7 +4,7 @@ const readline = require('readline');
 // Configuration options
 const robotId = process.argv[2] || 'local-robot';
 const apiKey = process.argv[3] || 'test-api-key'; // API key should be provided as second argument
-const serverUrl = process.env.WS_SERVER_URL || 'ws://multi-robot-control-dashboard.onrender.com';
+const serverUrl = process.env.WS_SERVER_URL || 'ws://localhost:5000';
 
 console.log(`Starting robot simulation for: ${robotId}`);
 console.log(`Using API Key: ${apiKey.substring(0, 4)}*******`);
