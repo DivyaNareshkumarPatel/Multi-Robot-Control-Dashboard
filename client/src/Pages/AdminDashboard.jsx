@@ -10,7 +10,7 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    localStorage.setItem("activeTab", active); // Store the active tab in localStorage whenever it changes
+    localStorage.setItem("activeTab", active);
   }, [active]);
 
   return (

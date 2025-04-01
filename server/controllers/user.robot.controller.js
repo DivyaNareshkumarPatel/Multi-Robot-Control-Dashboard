@@ -52,7 +52,7 @@ const deassignRobotFromUser = async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: "User not found" });
 
-        const robot = await Robot.findById( robotId );
+        const robot = await Robot.findById(robotId);
         if (!robot) return res.status(404).json({ message: "Robot not found" });
 
         if (!robot.users.includes(userId)) {
@@ -61,7 +61,7 @@ const deassignRobotFromUser = async (req, res) => {
 
         robot.users = robot.users.filter(id => id.toString() !== userId);
         await robot.save();
-        
+
         user.robots = user.robots.filter(id => id.toString() !== robot._id.toString());
         await user.save();
 
@@ -72,4 +72,7 @@ const deassignRobotFromUser = async (req, res) => {
     }
 };
 
-module.exports = {assignRobottoUser, getAssignedRobots, getAssignedUser, deassignRobotFromUser}
+
+module.exports = {
+    assignRobottoUser, getAssignedRobots, getAssignedUser, deassignRobotFromUser
+}

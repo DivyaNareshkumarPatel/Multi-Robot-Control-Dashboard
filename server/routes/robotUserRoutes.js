@@ -5,7 +5,7 @@ const {
     assignRobottoUser,
     getAssignedRobots,
     getAssignedUser,
-    deassignRobotFromUser
+    deassignRobotFromUser,
 } = require('../controllers/user.robot.controller');
 
 router.post('/assignRobot', assignRobottoUser);

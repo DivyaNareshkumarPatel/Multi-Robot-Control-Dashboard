@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RobotControl from "./RobotControl";
 import RobotVision from "./RobotVision";
-import { getAllRobots, sendCommands } from "../api/api";
+import { getAllRobots, sendCommands, getRobotByEmail } from "../api/api";
 import webSocketService from "../services/WebSocketService";
 
 export default function RobotTracking() {
@@ -12,7 +12,6 @@ export default function RobotTracking() {
   const [terminalHeight, setTerminalHeight] = useState(160);
   const [isConnected, setIsConnected] = useState(false);
 
-  // Connect to WebSocket when component mounts
   useEffect(() => {
     const connectWebSocket = async () => {
       try {
@@ -27,24 +26,17 @@ export default function RobotTracking() {
     };
 
     connectWebSocket();
-
-    // Clean up WebSocket connection when component unmounts
     return () => {
       webSocketService.disconnect();
     };
   }, []);
 
-  // Set up WebSocket event listeners
   useEffect(() => {
     if (!isConnected) return;
 
     // Listen for robot list updates
     const robotListUnsubscribe = webSocketService.addRobotListListener((wsRobots) => {
-      // Update connection status for robots that are connected via WebSocket
       addLog(`[WebSocket] Received list of ${wsRobots.length} connected robots`);
-      
-      // Option: Merge WebSocket robots with database robots if needed
-      // This could be implemented if you want to show WebSocket-only robots
     });
 
     // Listen for status updates
@@ -81,7 +73,16 @@ export default function RobotTracking() {
 
   const fetchRobots = async () => {
     try {
-      const response = await getAllRobots();
+      const userRole = localStorage.getItem("role");
+      const userEmail = localStorage.getItem("email");
+  
+      let response;
+      if (userRole === "admin") {
+        response = await getAllRobots();
+      } else {
+        response = await getRobotByEmail(userEmail);
+      }
+  
       setRobots(response.data);
       if (response.data.length > 0 && !selectedRobot) {
         setSelectedRobot(response.data[0].robotId);
@@ -92,13 +93,11 @@ export default function RobotTracking() {
     }
   };
 
-  // Add log entry with timestamp
   const addLog = (message) => {
     const timestamp = new Date().toLocaleTimeString();
     setLogs((prevLogs) => [`[${timestamp}] ${message}`, ...prevLogs]);
   };
 
-  // Handle command sending with WebSocket support
   const handleCommand = async (command) => {
     if (!selectedRobot) {
       addLog(`[Error] Please select a robot first`);
@@ -108,7 +107,6 @@ export default function RobotTracking() {
     addLog(`> [Robot ${selectedRobot}] ${command}`);
 
     try {
-      // Try WebSocket first if connected
       if (isConnected) {
         const sent = webSocketService.sendCommand(selectedRobot, command);
         if (!sent) {
@@ -118,7 +116,6 @@ export default function RobotTracking() {
           addLog(`[WebSocket] Command sent to robot ${selectedRobot}`);
         }
       } else {
-        // Otherwise use API
         await sendViaAPI(selectedRobot, command);
       }
     } catch (error) {
@@ -162,7 +159,6 @@ export default function RobotTracking() {
         {activeTab === "vision" ? "Robot Vision and Mapping" : "Robot Control Panel"}
       </h1>
 
-      {/* WebSocket connection status */}
       <div className={`connection-indicator ${isConnected ? 'connected' : 'disconnected'}`} style={{ margin: "0 20px 10px" }}>
         {isConnected ? "WebSocket Connected ✓" : "WebSocket Disconnected ✗"}
       </div>
@@ -182,35 +178,32 @@ export default function RobotTracking() {
         </select>
       </div>
 
-      <div className="content" style={{ height: `calc(100vh - ${terminalHeight + 160}px)`, overflowY:"scroll" }}>
+      <div className="content" style={{ height: `calc(100vh - ${terminalHeight + 240}px)`, overflowY:"scroll" }}>
         {activeTab === "vision" ? (
           <RobotVision />
         ) : (
-          <RobotControl onSendCommand={handleCommand} />
+          <RobotControl selectedRobot={selectedRobot} onSendCommand={handleCommand} />
         )}
       </div>
 
       <div className="control-terminal" style={{ height: `${terminalHeight}px`, maxHeight: "99vh" }}>
-        <div
-          className="resize-handle"
-          onMouseDown={(e) => {
-            const startY = e.clientY;
-            const startHeight = terminalHeight;
+        <div className="resize-handle" onMouseDown={(e) => {
+          const startY = e.clientY;
+          const startHeight = terminalHeight;
 
-            const onMouseMove = (event) => {
-              const newHeight = Math.max(35, Math.min(99 * window.innerHeight / 100, startHeight - (event.clientY - startY)));
-              setTerminalHeight(newHeight);
-            };
+          const onMouseMove = (event) => {
+            const newHeight = Math.max(35, Math.min(99 * window.innerHeight / 100, startHeight - (event.clientY - startY)));
+            setTerminalHeight(newHeight);
+          };
 
-            const onMouseUp = () => {
-              window.removeEventListener("mousemove", onMouseMove);
-              window.removeEventListener("mouseup", onMouseUp);
-            };
+          const onMouseUp = () => {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+          };
 
-            window.addEventListener("mousemove", onMouseMove);
-            window.addEventListener("mouseup", onMouseUp);
-          }}
-        >
+          window.addEventListener("mousemove", onMouseMove);
+          window.addEventListener("mouseup", onMouseUp);
+        }}>
           <i className="fa-solid fa-grip-lines drag-icon"></i>
         </div>
 

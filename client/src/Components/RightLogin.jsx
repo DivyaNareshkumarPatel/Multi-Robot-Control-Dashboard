@@ -58,10 +58,14 @@ export default function RightLogin() {
       setMessageType('success');
 
       setTimeout(() => {
+        localStorage.setItem("email", email);
         if (role === 'admin') {
           navigate('/adminDashboard');
-        } else {
+        } else if (role === 'robot_operator'){
           navigate('/dashboard');
+        }
+        else{
+          navigate('/robot_admin_dashboard')
         }
       }, 1000);
 

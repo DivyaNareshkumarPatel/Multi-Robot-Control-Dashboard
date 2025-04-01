@@ -5,6 +5,7 @@ import Signup from './Pages/Signup';
 import AdminDashboard from './Pages/AdminDashboard';
 import Dashboard from './Pages/Dashboard';
 import ProtectedRoute from './Components/ProtectedRoute';
+import RobotAdmin from './Pages/RobotAdmin';
 
 function App() {
   return (
@@ -19,13 +20,21 @@ function App() {
             <ProtectedRoute requiredRole="admin">
               <AdminDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedRoute requiredRole="user">
+            <ProtectedRoute requiredRole="robot_operator">
               <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/robot_admin_dashboard" 
+          element={
+            <ProtectedRoute requiredRole="robot_admin">
+              <RobotAdmin />
             </ProtectedRoute>
           } 
         />

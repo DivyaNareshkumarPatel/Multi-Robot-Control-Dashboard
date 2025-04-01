@@ -9,7 +9,7 @@ export default function RightSignup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState("robot_operator");
 
   const [nameError, setNameError] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -28,13 +28,21 @@ export default function RightSignup() {
   const handleNameChange = (e) => {
     const value = e.target.value;
     setName(value);
-    setNameError(validateName(value) ? "" : "Name must be at least 3 characters long and contain only letters and spaces");
+    setNameError(
+      validateName(value)
+        ? ""
+        : "Name must be at least 3 characters long and contain only letters and spaces"
+    );
   };
 
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setUsername(value);
-    setUsernameError(validateUsername(value) ? "" : "Username must be 3-15 characters long and contain only letters, numbers, or underscores");
+    setUsernameError(
+      validateUsername(value)
+        ? ""
+        : "Username must be 3-15 characters long and contain only letters, numbers, or underscores"
+    );
   };
 
   const handleEmailChange = (e) => {
@@ -46,7 +54,9 @@ export default function RightSignup() {
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
-    setPasswordError(value.length >= 6 ? "" : "Password must be at least 6 characters long");
+    setPasswordError(
+      value.length >= 6 ? "" : "Password must be at least 6 characters long"
+    );
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -73,12 +83,16 @@ export default function RightSignup() {
     }
 
     if (!validateName(name)) {
-      setNameError("Name must be at least 3 characters long and contain only letters and spaces");
+      setNameError(
+        "Name must be at least 3 characters long and contain only letters and spaces"
+      );
       hasError = true;
     }
 
     if (!validateUsername(username)) {
-      setUsernameError("Username must be 3-15 characters long and contain only letters, numbers, or underscores");
+      setUsernameError(
+        "Username must be 3-15 characters long and contain only letters, numbers, or underscores"
+      );
       hasError = true;
     }
 
@@ -101,7 +115,7 @@ export default function RightSignup() {
 
     try {
       const response = await signup({ name, username, email, password, role });
-      console.log(username); 
+      console.log(username);
       const data = await response.json();
 
       if (!response.ok) {
@@ -126,40 +140,82 @@ export default function RightSignup() {
       <h3 className="loginWelcome">Welcome</h3>
       <form onSubmit={handleSubmit} className="loginForm">
         <div className={`inputWrapper ${nameError ? "error" : ""}`}>
-          <input type="text" placeholder="Full Name" className="loginInput" value={name} onChange={handleNameChange} />
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="loginInput"
+            value={name}
+            onChange={handleNameChange}
+          />
           {nameError && <div className="errorText">{nameError}</div>}
         </div>
         <div className={`inputWrapper ${usernameError ? "error" : ""}`}>
-          <input type="text" placeholder="Username" className="loginInput" value={username} onChange={handleUsernameChange} />
+          <input
+            type="text"
+            placeholder="Username"
+            className="loginInput"
+            value={username}
+            onChange={handleUsernameChange}
+          />
           {usernameError && <div className="errorText">{usernameError}</div>}
         </div>
         <div className={`inputWrapper ${emailError ? "error" : ""}`}>
-          <input type="text" placeholder="Email address" className="loginInput" value={email} onChange={handleEmailChange} />
+          <input
+            type="text"
+            placeholder="Email address"
+            className="loginInput"
+            value={email}
+            onChange={handleEmailChange}
+          />
           {emailError && <div className="errorText">{emailError}</div>}
         </div>
         <div className={`inputWrapper ${passwordError ? "error" : ""}`}>
-          <input type="password" placeholder="Password" className="loginInput" value={password} onChange={handlePasswordChange} />
+          <input
+            type="password"
+            placeholder="Password"
+            className="loginInput"
+            value={password}
+            onChange={handlePasswordChange}
+          />
           {passwordError && <div className="errorText">{passwordError}</div>}
         </div>
         <div className={`inputWrapper ${confirmPasswordError ? "error" : ""}`}>
-          <input type="password" placeholder="Confirm Password" className="loginInput" value={confirmPassword} onChange={handleConfirmPasswordChange} />
-          {confirmPasswordError && <div className="errorText">{confirmPasswordError}</div>}
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="loginInput"
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+          />
+          {confirmPasswordError && (
+            <div className="errorText">{confirmPasswordError}</div>
+          )}
         </div>
         <div className="inputWrapper">
-          <select className="loginInput" value={role} onChange={handleRoleChange}>
-            <option value="user">User</option>
+          <select
+            className="loginInput"
+            value={role}
+            onChange={handleRoleChange}
+          >
+            <option value="robot_operator">Robot Operator</option>
+            <option value="robot_admin">Robot Admin</option>
             <option value="admin">Admin</option>
           </select>
         </div>
         <div className="submitButtonWrapper">
-          <button className="loginButton">
-            Request for Sign Up
-          </button>
+          <button className="loginButton">Request for Sign Up</button>
         </div>
-        {message && <div className={`messageWrapper ${messageType} visible`}>{message}</div>}
+        {message && (
+          <div className={`messageWrapper ${messageType} visible`}>
+            {message}
+          </div>
+        )}
       </form>
       <div className="signupPrompt">
-        Already have an account? <Link to="/login" className="signupLink">Login here</Link>
+        Already have an account?{" "}
+        <Link to="/login" className="signupLink">
+          Login here
+        </Link>
       </div>
     </div>
   );

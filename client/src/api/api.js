@@ -116,6 +116,56 @@ export const updateRobot = async (robotId, formData) => {
     }
 }
 
+export const addControlTitle = async (robotId, title) => {
+    try {
+        const response = await axios.post(`${url}/api/robot/robots/addControlTitle`, { robotId, title });
+        return response.data;
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error;
+    }
+};
+
+export const addControls = async (robotId, title, controls) => {
+    try {
+        const response = await axios.post(`${url}/api/robot/robots/addControls`, { robotId, title, controls });
+        return response.data;
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error;
+    }
+};
+
+export const deleteControlTitle = async (robotId, title) => {
+    try {
+        const response = await axios.post(`${url}/api/robot/robots/deleteControlTitle`, { robotId, title });
+        return response.data;
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error;
+    }
+};
+
+export const deleteControl = async (robotId, title, control) => {
+    try {
+        const response = await axios.post(`${url}/api/robot/robots/deleteControl`, { robotId, title, control });
+        return response.data;
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error;
+    }
+};
+
+export const getControlTitlesAndControls = async (robotId) => {
+    try {
+        const response = await axios.get(`${url}/api/robot/robots/${robotId}/controls`);
+        return response.data;  // Return the control titles and controls
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        return error;
+    }
+};
+
 export const assignRobotToUser = async ( userId, robotId ) => {
     try {
         console.log("API Call - Assign Robot:", userId, robotId);
@@ -150,3 +200,14 @@ export const getAssignedRobots = async (userId) => {
         return error;
     }
 };
+
+export const getRobotByEmail = async(email) => {
+    try{
+        const response = await axios.get(`${url}/api/robot/robots/getRobotsByEmail/${email}`);
+        return response;
+    }
+    catch(error){
+        console.error(error.response ? error.response.data : error.message);
+        return error
+    }
+}

@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ["user", "admin"], default: "user" },
+  role: { type: String, enum: ["robot_admin", "admin", "robot_operator"], default: "robot_operator" },
   status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
   robots: [{ type: mongoose.Schema.Types.ObjectId, ref: "Robot" }],
 });

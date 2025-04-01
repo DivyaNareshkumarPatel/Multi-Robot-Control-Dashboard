@@ -7,7 +7,13 @@ const {
   updateRobot,
   deleteRobot,
   sendCommands,
-  getCommandHistory
+  getCommandHistory,
+  getRobotByEmail,
+  addControlTitle,
+  addControls,
+  deleteControlTitle,
+  deleteControl,
+  getControlTitlesAndControls
 } = require('../controllers/robot.controller');
 
 router.post('/robots', createRobot);
@@ -23,5 +29,17 @@ router.delete('/robots/:id', deleteRobot);
 router.post('/robots/commands', sendCommands);
 
 router.get('/robots/:robotId/commands', getCommandHistory);
+
+router.get('/robots/getRobotsByEmail/:email', getRobotByEmail);
+
+router.post('/robots/addControlTitle', addControlTitle);
+
+router.post('/robots/addControls', addControls);
+
+router.post('/robots/deleteControlTitle', deleteControlTitle);
+
+router.post('/robots/deleteControl', deleteControl);
+
+router.get("/robots/:robotId/controls", getControlTitlesAndControls);
 
 module.exports = router;
