@@ -74,3 +74,68 @@ exports.getAllUsers = async (req, res) => {
     return res.status(500).json({ message: "Error fetching users" });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, username, email, password, role, status } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Update fields only if provided
+    if (name) user.name = name;
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (role) user.role = role;
+    if (status) user.status = status;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+
+    return res.status(200).json({ message: "User updated successfully", user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error updating user", error });
+  }
+};
+
+exports.addUser = async (req, res) => {
+  try {
+    const { name, username, email, password, role } = req.body;
+
+    if (!name || !username || !email || !password || !role) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      role,
+      status: "approved",
+    });
+
+    await newUser.save();
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error("Add User Error:", error);
+    res.status(500).json({ message: "Error adding user", error });
+  }
+};

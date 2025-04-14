@@ -5,11 +5,19 @@ const { sendCommandToRobot, getRobotCommandHistory } = require('../websocket/rob
 
 const createRobot = async (req, res) => {
   try {
+    const { robotId } = req.body;
+    const existingRobot = await Robot.findOne({ robotId });
+    if (existingRobot) {
+      return res.status(400).json({success:false, message: "Robot ID already exists." });
+    }
+
     const robot = new Robot(req.body);
     await robot.save();
-    res.status(201).json({ message: 'Robot registered successfully!', robot });
+    res.status(201).json({success:true, message: 'Robot registered successfully!', robot });
+
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error in robot registration:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

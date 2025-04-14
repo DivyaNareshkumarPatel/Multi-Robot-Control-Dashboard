@@ -53,7 +53,6 @@ export default function RightLogin() {
 
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
-
       setMessage('Login successful!');
       setMessageType('success');
 
@@ -125,12 +124,12 @@ export default function RightLogin() {
           </div>
         )}
       </form>
-      <div className="signupPrompt">
+      {/* <div className="signupPrompt">
         Don't have an account?{" "}
         <Link to="/signup" className="signupLink">
           Sign up here
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 }

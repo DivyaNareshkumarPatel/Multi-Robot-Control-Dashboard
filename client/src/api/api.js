@@ -30,6 +30,28 @@ export const signup = async ({ name, username, email, password, role }) => {
     }
 }
 
+export const addUser = async (data) => {
+    try{
+        const response = await axios.post(`${url}/api/users/addUser`, data);
+        return response;
+    }
+    catch(error){
+        console.error("Error adding user:", error.response ? error.response.data : error.message);
+        return error
+    }
+}
+
+export const updateUser = async (userId, data) => {
+    try{
+        const response = await axios.put(`${url}/api/users/updateUser/${userId}`, data);
+        return response;
+    }
+    catch(error){
+        console.error("Error updating user:", error.response ? error.response.data : error.message);
+        return error
+    }
+}
+
 export const userDetails = async () => {
     try {
         const response = await axios.get(`${url}/api/users/user`);
