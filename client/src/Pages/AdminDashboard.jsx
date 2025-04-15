@@ -3,6 +3,7 @@ import "../style/adminDashboard.css";
 import User from "../Components/User";
 import RobotRegistration from "../Components/Robot_registration";
 import RobotTracking from "../Components/RobotTracking";
+import Report from "../Components/Report";
 
 export default function AdminDashboard() {
   const [active, setActive] = useState(() => {
@@ -37,12 +38,20 @@ export default function AdminDashboard() {
           <i className="fa-solid fa-bars-progress icon"></i>
           {active === "robotTracking" && <span className="dot"></span>}
         </div>
+        <div
+          className={`icon-container ${active === "report" ? "active" : ""}`}
+          onClick={() => setActive("report")}
+        >
+          <i class="fa-regular fa-rectangle-list icon"></i>
+          {active === "report" && <span className="dot"></span>}
+        </div>
       </div>
 
       <div className="dashboard-content">
         {active === "user" && <User />}
         {active === "robotRegistration" && <RobotRegistration />}
         {active === "robotTracking" && <RobotTracking />}
+        {active === "report" && <Report/>}
       </div>
     </div>
   );
