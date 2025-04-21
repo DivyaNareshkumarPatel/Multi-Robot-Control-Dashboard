@@ -233,3 +233,14 @@ export const getRobotByEmail = async(email) => {
         return error
     }
 }
+
+export const getCommandHistory = async(robotId, limit = 50) => {
+    try {
+        const response = await axios.get(`${url}/api/robot/robots/${robotId}/commands?limit=${limit}`);
+        return response;
+    }
+    catch (error) {
+        console.error("Error fetching command history:", error.response ? error.response.data : error.message);
+        return { data: [] };
+    }
+}

@@ -70,19 +70,43 @@ router.post('/robot/register', authenticate, async (req, res) => {
 
 router.post("/robots/command", authenticate, async (req, res) => {
     try {
-        const { robotId, response } = req.body;
+        const { robotId, response, dataType } = req.body;
 
         if (!robotId || !response) {
-            return res.status(400).json({ message: "robotId and command are required" });
+            return res.status(400).json({ message: "robotId and response are required" });
         }
-        console.log(`command received: Robot ${robotId} -> ${response}`);
 
-        res.status(200).json({ message: "Command received successfully", robotId, response });
+        console.log(`Data received from Robot ${robotId}`);
+
+        if (typeof response === 'object') {
+            console.log(`Received structured data (Type: ${dataType || 'N/A'}):`, response);
+            switch(dataType) {
+                case 'status_update':
+                    console.log('Processing status update...');
+                    break;
+                case 'task_result':
+                    console.log('Processing task result...');
+                    break;
+                case 'sensor_data':
+                    console.log('Processing sensor data...');
+                    break;
+                case 'conversation_snippet':
+                    console.log('Processing conversation snippet...');
+                    break;
+                case 'alert':
+                    console.log('Processing alert...');
+                    break;
+                default:
+                    console.log('Processing generic object data...');
+            }
+        } else {
+            console.log(`Received simple response: ${response}`);
+        }
+
+        res.status(200).json({ message: "Data received successfully", robotId });
     } catch (error) {
-
-        console.log(error.message)
-
-        res.status(500).json({ message: "Server Error", error: error.message });
+        console.error("Error processing data from robot:", error);
+        res.status(500).json({ message: "Server Error processing robot data", error: error.message });
     }
 });
 

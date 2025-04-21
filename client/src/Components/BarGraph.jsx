@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
  Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ComposedChart
 } from 'recharts';
 
-const data = [
+const defaultData = [
   { month: 'Jan', tasksGiven: 10, tasksCompleted: 8 },
   { month: 'Feb', tasksGiven: 15, tasksCompleted: 13 },
   { month: 'Mar', tasksGiven: 7, tasksCompleted: 6 },
@@ -18,7 +18,23 @@ const data = [
   { month: 'Dec', tasksGiven: 10, tasksCompleted: 9 },
 ];
 
-const BarGraph = () => {
+const BarGraph = ({ robotId }) => {
+  const [data, setData] = useState(defaultData);
+
+  useEffect(() => {
+    if (robotId) {
+      const robotHash = robotId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
+      
+      const newData = defaultData.map(item => ({
+        ...item,
+        tasksGiven: Math.max(5, Math.floor(item.tasksGiven * (1 + robotHash / 10))),
+        tasksCompleted: Math.max(3, Math.floor(item.tasksCompleted * (1 + robotHash / 10)))
+      }));
+      
+      setData(newData);
+    }
+  }, [robotId]);
+
   return (
     <div
       style={{
@@ -33,7 +49,7 @@ const BarGraph = () => {
       }}
     >
       <h3 style={{ textAlign: 'center', color: 'white', marginBottom: '10px' }}>
-        Monthly Tasks Given vs Completed
+        {robotId ? `${robotId} - Monthly Tasks Given vs Completed` : 'Monthly Tasks Given vs Completed'}
       </h3>
       <ResponsiveContainer width="100%" height="90%">
         <ComposedChart data={data}>

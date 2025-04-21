@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
 
-const data = [
+const defaultData = [
   { month: 'Jan', conversations: 50 },
   { month: 'Feb', conversations: 65 },
   { month: 'Mar', conversations: 40 },
@@ -18,7 +18,22 @@ const data = [
   { month: 'Dec', conversations: 55 },
 ];
 
-const BarGraphHorizontal = () => {
+const BarGraphHorizontal = ({ robotId }) => {
+  const [data, setData] = useState(defaultData);
+
+  useEffect(() => {
+    if (robotId) {
+      const robotHash = robotId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
+      
+      const newData = defaultData.map(item => ({
+        ...item,
+        conversations: Math.max(10, Math.floor(item.conversations * (1 + robotHash / 10)))
+      }));
+      
+      setData(newData);
+    }
+  }, [robotId]);
+
   return (
     <div
       style={{
@@ -33,7 +48,7 @@ const BarGraphHorizontal = () => {
       }}
     >
       <h3 style={{ textAlign: 'center', color: 'white', marginBottom: '10px' }}>
-        Monthly Conversation Count
+        {robotId ? `${robotId} - Monthly Conversation Count` : 'Monthly Conversation Count'}
       </h3>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart
