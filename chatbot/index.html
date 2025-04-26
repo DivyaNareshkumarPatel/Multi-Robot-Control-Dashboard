@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Bot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Chat History</h2>
+      <div id="history-list"></div>
+      <button id="new-chat">+ New Chat</button>
+    </aside>
+    <main class="chat-section">
+      <div class="chat-header">AI Assistant</div>
+      <div class="chat-body" id="chat-box"></div>
+      <div class="chat-input-area">
+        <input type="text" id="user-input" placeholder="Send a message..." />
+        <button id="send-btn">➤</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
