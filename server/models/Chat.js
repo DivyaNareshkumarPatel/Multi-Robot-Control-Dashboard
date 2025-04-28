@@ -5,7 +5,8 @@ const chatSchema = new mongoose.Schema({
     messages: [{
         text: { type: String, required: true },
         sender: { type: String, enum: ['user', 'bot'], required: true },
-        timestamp: { type: Date, default: Date.now }
+        timestamp: { type: Date, default: Date.now },
+        fileUrl: { type: String, required: false }
     }]
 }, { timestamps: true });
 

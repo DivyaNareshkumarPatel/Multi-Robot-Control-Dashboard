@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const ChatHistory = require('../models/Chat');
 const CommandHistory = require('../models/CommandHistory');
+const axios = require('axios');
 require('dotenv').config();
 
 const router = express.Router();
@@ -15,14 +16,11 @@ if (!process.env.GOOGLE_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Or your preferred model
-
-// In-memory store for conversation histories (replace with DB later if needed)
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
 const chatHistories = {};
 
-const COMMAND_PREFIX = "Send robot command:";
+const COMMAND_PREFIX = "robot command:";
 
-// Middleware to authenticate user tokens
 function authenticateToken(req, res, next) {
     const token = req.headers['authorization']?.split(' ')[1];
 
@@ -34,49 +32,46 @@ function authenticateToken(req, res, next) {
         if (err) {
             return res.status(403).json({ error: 'Invalid or expired token' });
         }
-        req.user = user;  // Attach the user object to the request
+        req.user = user;  
         console.log('Authenticated user:', req.user);
         next();
     });
 }
 
-// Route to send messages
-// Route to send messages
 router.post('/send', authenticateToken, async (req, res) => {
-    const { message, chatId } = req.body;
+    const { message, chatId, fileUrl } = req.body;
     const { user } = req;
 
-    if (!message || !chatId) {
-        return res.status(400).json({ error: 'Message and chatId are required.' });
+    if (!chatId || (!message && !fileUrl)) {
+        return res.status(400).json({ error: 'ChatId and either message or fileUrl are required.' });
     }
 
     try {
-        // Find the chat and ensure it belongs to the authenticated user
-        const chat = await ChatHistory.findById(chatId);
+        let chat = await ChatHistory.findById(chatId);
         if (!chat || chat.userId.toString() !== user.id) {
             return res.status(404).json({ error: 'Chat not found or not owned by the user.' });
         }
 
-        // Save user message to DB first
+        const userMessageData = { text: message || '', sender: 'user', timestamp: new Date() };
+        if (fileUrl) {
+            userMessageData.fileUrl = fileUrl;
+        }
         await ChatHistory.updateOne(
             { _id: chatId },
-            { $push: { messages: { text: message, sender: 'user', timestamp: new Date() } } }
+            { $push: { messages: userMessageData } }
         );
 
-        // Handle Robot Command
-        if (message.trim().toLowerCase().startsWith(COMMAND_PREFIX)) {
+        if (message && message.trim().toLowerCase().startsWith(COMMAND_PREFIX)) {
             const commandParts = message.substring(COMMAND_PREFIX.length).trim().split(' ');
             const robotId = commandParts[0];
             const command = commandParts.slice(1).join(' ');
 
             if (!robotId || !command) {
                 const invalidCommandReply = "Invalid command format. Use 'robot command: <robotId> <command text>'";
-                
                 await ChatHistory.updateOne(
                     { _id: chatId },
                     { $push: { messages: { text: invalidCommandReply, sender: 'bot', timestamp: new Date() } } }
                 );
-
                 return res.json({ reply: invalidCommandReply });
             }
 
@@ -84,9 +79,7 @@ router.post('/send', authenticateToken, async (req, res) => {
                 console.log(`Sending command to robot ${robotId}: ${command}`);
                 const result = await sendCommandToRobot(robotId, command, 'chatbot');
                 console.log('Command result:', result);
-
-                const confirmationText = `Command "${command}" sent to robot ${robotId}. Command ID: ${result.commandId}`;
-                console.log(confirmationText, chatId)
+                const confirmationText = `Command \"${command}\" sent to robot ${robotId}. Command ID: ${result.commandId}`;
                 await ChatHistory.updateOne(
                     { _id: chatId },
                     { $push: { messages: { text: confirmationText, sender: 'bot', timestamp: new Date() } } }
@@ -95,51 +88,88 @@ router.post('/send', authenticateToken, async (req, res) => {
 
             } catch (error) {
                 console.error(`Error sending command to robot ${robotId}:`, error.message);
-
                 const errorText = `Error sending command to robot ${robotId}: ${error.message}`;
-                console.log(errorText, chatId)
                 await ChatHistory.updateOne(
                     { _id: chatId },
                     { $push: { messages: { text: errorText, sender: 'bot', timestamp: new Date() } } }
                 );
-
                 return res.json({ reply: errorText });
             }
         } 
         else {
+            chat = await ChatHistory.findById(chatId);
+
             const formattedHistory = chat.messages.map(msg => ({
                 role: msg.sender === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.text }]
+                parts: [{ text: msg.text || '' }]
             }));
+
+            const messageParts = [];
+
+            if (fileUrl) {
+                try {
+                    console.log(`Fetching image from: ${fileUrl}`);
+                    const imageResponse = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+                    const mimeType = imageResponse.headers['content-type'];
+                    if (!mimeType || !mimeType.startsWith('image/')) {
+                        throw new Error('Invalid content type fetched, not an image.');
+                    }
+                    const base64Image = Buffer.from(imageResponse.data).toString('base64');
+                    
+                    messageParts.push({
+                        inline_data: {
+                            mime_type: mimeType,
+                            data: base64Image
+                        }
+                    });
+                    console.log(`Image part added (MIME: ${mimeType})`);
+                } catch (imgError) {
+                    console.error(`Failed to fetch or process image from ${fileUrl}:`, imgError);
+                    const errorText = `Sorry, I couldn't process the image from the provided link.`;
+                     await ChatHistory.updateOne(
+                        { _id: chatId },
+                        { $push: { messages: { text: errorText, sender: 'bot', timestamp: new Date() } } }
+                    );
+                    return res.json({ reply: errorText }); 
+                }
+            }
+
+            if (message) {
+                messageParts.push({ text: message });
+                console.log('Text part added.');
+            }
+
+            if (messageParts.length === 0) {
+                 return res.status(400).json({ error: 'Cannot send an empty message to the AI.' });
+            }
 
             const chatInstance = model.startChat({
                 history: formattedHistory,
                 generationConfig: {
-                    maxOutputTokens: 100,
+                    maxOutputTokens: 200, 
                 },
             });
 
-            const result = await chatInstance.sendMessage(message);
+            console.log(`Sending ${messageParts.length} part(s) to Gemini.`);
+            const result = await chatInstance.sendMessage(messageParts);
             const response = await result.response;
             const botReplyText = response.text();
 
-            // Save bot response to chat history
+            const botMessageData = { text: botReplyText, sender: 'bot', timestamp: new Date() };
             await ChatHistory.updateOne(
                 { _id: chatId },
-                { $push: { messages: { text: botReplyText, sender: 'bot', timestamp: new Date() } } }
+                { $push: { messages: botMessageData } }
             );
 
             res.json({ reply: botReplyText });
         }
 
     } catch (error) {
-        console.error('Error in /send:', error);
-        res.status(500).json({ error: 'Internal server error while sending message.' });
+        console.error('Error in /send route:', error);
+        res.status(500).json({ error: 'Internal server error while processing message.' });
     }
 });
 
-
-// Route to fetch chat history
 router.get('/chat-history', authenticateToken, async (req, res) => {
     const { user } = req;
 
@@ -158,7 +188,6 @@ router.get('/chat-history', authenticateToken, async (req, res) => {
     }
 });
 
-// Route to sign up
 router.post('/signup', async (req, res) => {
     const { fullName, email, password } = req.body;
 
@@ -182,7 +211,6 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-// Route to log in
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -210,7 +238,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Route to start a new chat
 router.post('/new-chat', authenticateToken, async (req, res) => {
     const { user } = req;
 

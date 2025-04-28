@@ -141,3 +141,75 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
+
+/* Styles for File Input Button */
+#file-btn {
+  background-color: #555;
+  border: none;
+  color: #fff;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 1.1rem; /* Adjust size as needed */
+  cursor: pointer;
+  margin-left: 10px;
+  display: inline-flex; /* Align icon vertically */
+  align-items: center;
+  justify-content: center;
+}
+
+#file-btn:hover {
+  background-color: #666;
+}
+
+/* Style for the file info display */
+#file-info {
+  color: #ccc; /* Lighter grey */
+  font-size: 0.85em;
+  margin-left: 10px;
+  align-self: center; /* Vertically center with input/buttons */
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ... if too long */
+  max-width: 150px; /* Limit width */
+}
+
+/* System messages styling (optional) */
+.message.system {
+  background-color: #333;
+  color: #aaa;
+  font-style: italic;
+  font-size: 0.9em;
+  align-self: center;
+  text-align: center;
+  width: fit-content;
+  padding: 5px 10px;
+}
+
+.message.system-error {
+  background-color: #5e2a2a;
+  color: #f8d7da;
+  font-style: italic;
+  font-size: 0.9em;
+  align-self: center;
+  text-align: center;
+  width: fit-content;
+  padding: 5px 10px;
+}
+
+/* Scrollbar styling (optional) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #202123;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
