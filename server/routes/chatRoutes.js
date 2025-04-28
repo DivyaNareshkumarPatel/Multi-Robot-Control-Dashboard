@@ -20,7 +20,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Or you
 // In-memory store for conversation histories (replace with DB later if needed)
 const chatHistories = {};
 
-const COMMAND_PREFIX = "robot command:";
+const COMMAND_PREFIX = "Send robot command:";
 
 // Middleware to authenticate user tokens
 function authenticateToken(req, res, next) {
