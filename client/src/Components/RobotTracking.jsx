@@ -8,7 +8,9 @@ export default function RobotTracking() {
   const [logs, setLogs] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState("");
   const [robots, setRobots] = useState([]);
-  const [activeTab, setActiveTab] = useState(localStorage.getItem("RobotActiveTab") || "vision");
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("RobotActiveTab") || "vision"
+  );
   const [terminalHeight, setTerminalHeight] = useState(160);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -19,7 +21,7 @@ export default function RobotTracking() {
         setIsConnected(true);
         addLog(`[WebSocket] Connected successfully`);
       } catch (error) {
-        console.error('Failed to connect to WebSocket server:', error);
+        console.error("Failed to connect to WebSocket server:", error);
         setIsConnected(false);
         addLog(`[WebSocket] Connection failed, using API fallback`);
       }
@@ -35,28 +37,38 @@ export default function RobotTracking() {
     if (!isConnected) return;
 
     // Listen for robot list updates
-    const robotListUnsubscribe = webSocketService.addRobotListListener((wsRobots) => {
-      addLog(`[WebSocket] Received list of ${wsRobots.length} connected robots`);
-    });
+    const robotListUnsubscribe = webSocketService.addRobotListListener(
+      (wsRobots) => {
+        addLog(
+          `[WebSocket] Received list of ${wsRobots.length} connected robots`
+        );
+      }
+    );
 
     // Listen for status updates
-    const statusUnsubscribe = webSocketService.addStatusListener((status, data) => {
-      if (status === 'disconnected') {
-        setIsConnected(false);
-        addLog(`[WebSocket] Disconnected, using API fallback`);
-      } else if (status === 'robot_update') {
-        addLog(`[WebSocket] Robot ${data.robotId} ${data.status}`);
-      } else if (status === 'command_status') {
-        addLog(`[WebSocket] Robot ${data.robotId} completed: ${data.command}`);
+    const statusUnsubscribe = webSocketService.addStatusListener(
+      (status, data) => {
+        if (status === "disconnected") {
+          setIsConnected(false);
+          addLog(`[WebSocket] Disconnected, using API fallback`);
+        } else if (status === "robot_update") {
+          addLog(`[WebSocket] Robot ${data.robotId} ${data.status}`);
+        } else if (status === "command_status") {
+          addLog(
+            `[WebSocket] Robot ${data.robotId} completed: ${data.command}`
+          );
+        }
       }
-    });
+    );
 
     // Listen for other messages
-    const messageUnsubscribe = webSocketService.addMessageListener((message) => {
-      if (message.type === 'ack' || message.type === 'error') {
-        addLog(`[WebSocket] ${message.message || JSON.stringify(message)}`);
+    const messageUnsubscribe = webSocketService.addMessageListener(
+      (message) => {
+        if (message.type === "ack" || message.type === "error") {
+          addLog(`[WebSocket] ${message.message || JSON.stringify(message)}`);
+        }
       }
-    });
+    );
 
     // Clean up listeners when component unmounts
     return () => {
@@ -75,14 +87,14 @@ export default function RobotTracking() {
     try {
       const userRole = localStorage.getItem("role");
       const userEmail = localStorage.getItem("email");
-  
+
       let response;
       if (userRole === "admin") {
         response = await getAllRobots();
       } else {
         response = await getRobotByEmail(userEmail);
       }
-  
+
       setRobots(response.data);
       if (response.data.length > 0 && !selectedRobot) {
         setSelectedRobot(response.data[0].robotId);
@@ -131,10 +143,12 @@ export default function RobotTracking() {
       if (response.status === 200) {
         addLog(`[API] Command sent to ${robotId}`);
       } else {
-        addLog(`[API Error] ${response.data?.message || 'Failed to send command'}`);
+        addLog(
+          `[API Error] ${response.data?.message || "Failed to send command"}`
+        );
       }
     } catch (error) {
-      console.error('API command error:', error);
+      console.error("API command error:", error);
       addLog(`[API Error] ${error.message}`);
     }
   };
@@ -145,31 +159,60 @@ export default function RobotTracking() {
   };
 
   return (
-    <div className="robot-tracking">
+    <div
+      className="robot-tracking"
+      style={{
+        overflow: "scroll",
+        height: "100%",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+    >
       <nav className="innerNav">
-        <div className={activeTab === "vision" ? "active-tab" : ""} onClick={() => switchTab("vision")}>
+        <div
+          className={activeTab === "vision" ? "active-tab" : ""}
+          onClick={() => switchTab("vision")}
+        >
           Robot Vision and Mapping
         </div>
-        <div className={activeTab === "control-tab" ? "active-tab" : ""} onClick={() => switchTab("control-tab")}>
+        <div
+          className={activeTab === "control-tab" ? "active-tab" : ""}
+          onClick={() => switchTab("control-tab")}
+        >
           Robot Control Panel
         </div>
       </nav>
 
-      <h1 className="title" style={{ paddingLeft: "20px", marginBottom: "10px", marginTop: "15px" }}>
-        {activeTab === "vision" ? "Robot Vision and Mapping" : "Robot Control Panel"}
+      <h1
+        className="title"
+        style={{ paddingLeft: "20px", marginBottom: "10px", marginTop: "15px" }}
+      >
+        {activeTab === "vision"
+          ? "Robot Vision and Mapping"
+          : "Robot Control Panel"}
       </h1>
 
-      <div className={`connection-indicator ${isConnected ? 'connected' : 'disconnected'}`} style={{ margin: "0 20px 10px" }}>
+      <div
+        className={`connection-indicator ${
+          isConnected ? "connected" : "disconnected"
+        }`}
+        style={{ margin: "0 20px 10px" }}
+      >
         {isConnected ? "WebSocket Connected ✓" : "WebSocket Disconnected ✗"}
       </div>
 
       <div className="robot-selector" style={{ paddingLeft: "20px" }}>
         <label>Select Robot:</label>
-        <select className="robot-dropdown" value={selectedRobot} onChange={(e) => setSelectedRobot(e.target.value)}>
+        <select
+          className="robot-dropdown"
+          value={selectedRobot}
+          onChange={(e) => setSelectedRobot(e.target.value)}
+        >
           {robots.length > 0 ? (
             robots.map((robot) => (
               <option key={robot._id} value={robot.robotId}>
-                {robot.robotName || robot.robotId} {isConnected ? "- WebSocket Available" : ""}
+                {robot.robotName || robot.robotId}{" "}
+                {isConnected ? "- WebSocket Available" : ""}
               </option>
             ))
           ) : (
@@ -178,37 +221,62 @@ export default function RobotTracking() {
         </select>
       </div>
 
-      <div className="content" style={{ height: `calc(100vh - ${terminalHeight + 240}px)`, overflowY:"scroll" }}>
+      <div
+        className="content"
+        style={{
+          height: `calc(100vh - ${terminalHeight + 240}px)`,
+          overflowY: "scroll",
+        }}
+      >
         {activeTab === "vision" ? (
           <RobotVision />
         ) : (
-          <RobotControl selectedRobot={selectedRobot} onSendCommand={handleCommand} />
+          <RobotControl
+            selectedRobot={selectedRobot}
+            onSendCommand={handleCommand}
+          />
         )}
       </div>
 
-      <div className="control-terminal" style={{ height: `${terminalHeight}px`, maxHeight: "99vh" }}>
-        <div className="resize-handle" onMouseDown={(e) => {
-          const startY = e.clientY;
-          const startHeight = terminalHeight;
+      <div
+        className="control-terminal"
+        style={{ height: `${terminalHeight}px`, maxHeight: "99vh" }}
+      >
+        <div
+          className="resize-handle"
+          onMouseDown={(e) => {
+            const startY = e.clientY;
+            const startHeight = terminalHeight;
 
-          const onMouseMove = (event) => {
-            const newHeight = Math.max(35, Math.min(99 * window.innerHeight / 100, startHeight - (event.clientY - startY)));
-            setTerminalHeight(newHeight);
-          };
+            const onMouseMove = (event) => {
+              const newHeight = Math.max(
+                35,
+                Math.min(
+                  (99 * window.innerHeight) / 100,
+                  startHeight - (event.clientY - startY)
+                )
+              );
+              setTerminalHeight(newHeight);
+            };
 
-          const onMouseUp = () => {
-            window.removeEventListener("mousemove", onMouseMove);
-            window.removeEventListener("mouseup", onMouseUp);
-          };
+            const onMouseUp = () => {
+              window.removeEventListener("mousemove", onMouseMove);
+              window.removeEventListener("mouseup", onMouseUp);
+            };
 
-          window.addEventListener("mousemove", onMouseMove);
-          window.addEventListener("mouseup", onMouseUp);
-        }}>
+            window.addEventListener("mousemove", onMouseMove);
+            window.addEventListener("mouseup", onMouseUp);
+          }}
+        >
           <i className="fa-solid fa-grip-lines drag-icon"></i>
         </div>
 
         <div className="log-container">
-          {logs.length > 0 ? logs.map((log, index) => <p key={index}>{log}</p>) : <p>No commands yet...</p>}
+          {logs.length > 0 ? (
+            logs.map((log, index) => <p key={index}>{log}</p>)
+          ) : (
+            <p>No commands yet...</p>
+          )}
         </div>
       </div>
 

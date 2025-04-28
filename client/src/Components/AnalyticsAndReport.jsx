@@ -18,10 +18,9 @@ export default function AnalyticsAndReport() {
     totalInteractions: 10,
     totalConversations: 50,
     totalConversationsToday: 5,
-    averageConversationTime: "50 mins"
+    averageConversationTime: "50 mins",
   });
   const [isLoading, setIsLoading] = useState(true);
-
 
   useEffect(() => {
     fetchRobots();
@@ -37,14 +36,14 @@ export default function AnalyticsAndReport() {
     try {
       const userRole = localStorage.getItem("role");
       const userEmail = localStorage.getItem("email");
-  
+
       let response;
       if (userRole === "admin") {
         response = await getAllRobots();
       } else {
         response = await getRobotByEmail(userEmail);
       }
-  
+
       setRobots(response.data);
       if (response.data.length > 0) {
         setSelectedRobot(response.data[0].robotId);
@@ -58,31 +57,33 @@ export default function AnalyticsAndReport() {
 
   const fetchRobotData = async () => {
     try {
-      const robotIndex = robots.findIndex(robot => robot.robotId === selectedRobot);
-      
+      const robotIndex = robots.findIndex(
+        (robot) => robot.robotId === selectedRobot
+      );
+
       const commandHistoryResponse = await getCommandHistory(selectedRobot);
       const commandHistory = commandHistoryResponse.data || [];
-      
+
       const totalCommands = commandHistory.length;
-      const todayCommands = commandHistory.filter(cmd => {
+      const todayCommands = commandHistory.filter((cmd) => {
         const cmdDate = new Date(cmd.createdAt);
         const today = new Date();
         return cmdDate.toDateString() === today.toDateString();
       }).length;
-      
+
       setAnalyticsData({
-        battery: 30 + (robotIndex * 5) % 70,
-        cpuUsage: 50 + (robotIndex * 7) % 50,
-        ramUsage: 40 + (robotIndex * 10) % 60,
-        ipadBattery: 50 + (robotIndex * 3) % 50,
-        distance: `${800 + (robotIndex * 200)}m`,
-        totalUptime: `${100 + (robotIndex * 20)} mins`,
-        totalTaskCompleted: totalCommands || (80 + (robotIndex * 10)),
-        totalTaskCompletedToday: todayCommands || (5 + (robotIndex * 2)),
-        totalInteractions: 8 + (robotIndex * 3),
-        totalConversations: 40 + (robotIndex * 5),
-        totalConversationsToday: 3 + (robotIndex * 1),
-        averageConversationTime: `${45 + (robotIndex * 5)} mins`
+        battery: 30 + ((robotIndex * 5) % 70),
+        cpuUsage: 50 + ((robotIndex * 7) % 50),
+        ramUsage: 40 + ((robotIndex * 10) % 60),
+        ipadBattery: 50 + ((robotIndex * 3) % 50),
+        distance: `${800 + robotIndex * 200}m`,
+        totalUptime: `${100 + robotIndex * 20} mins`,
+        totalTaskCompleted: totalCommands || 80 + robotIndex * 10,
+        totalTaskCompletedToday: todayCommands || 5 + robotIndex * 2,
+        totalInteractions: 8 + robotIndex * 3,
+        totalConversations: 40 + robotIndex * 5,
+        totalConversationsToday: 3 + robotIndex * 1,
+        averageConversationTime: `${45 + robotIndex * 5} mins`,
       });
     } catch (error) {
       console.error("Error fetching robot data:", error);
@@ -97,8 +98,8 @@ export default function AnalyticsAndReport() {
     <div>
       <div className="robot-selector" style={{ margin: "20px" }}>
         <label>Select Robot: </label>
-        <select 
-          value={selectedRobot} 
+        <select
+          value={selectedRobot}
           onChange={(e) => setSelectedRobot(e.target.value)}
           style={{
             backgroundColor: "#252526",
@@ -109,7 +110,7 @@ export default function AnalyticsAndReport() {
             borderRadius: "5px",
             cursor: "pointer",
             width: "300px",
-            marginLeft: "10px"
+            marginLeft: "10px",
           }}
         >
           {robots.map((robot) => (
@@ -129,16 +130,28 @@ export default function AnalyticsAndReport() {
         }}
       >
         <div>
-          <CircularGraph level={analyticsData.battery} heading="Battery"></CircularGraph>
+          <CircularGraph
+            level={analyticsData.battery}
+            heading="Battery"
+          ></CircularGraph>
         </div>
         <div>
-          <CircularGraph level={analyticsData.cpuUsage} heading="CPU Usage"></CircularGraph>
+          <CircularGraph
+            level={analyticsData.cpuUsage}
+            heading="CPU Usage"
+          ></CircularGraph>
         </div>
         <div>
-          <CircularGraph level={analyticsData.ramUsage} heading="RAM Usage"></CircularGraph>
+          <CircularGraph
+            level={analyticsData.ramUsage}
+            heading="RAM Usage"
+          ></CircularGraph>
         </div>
         <div>
-          <CircularGraph level={analyticsData.ipadBattery} heading="Ipad Battery"></CircularGraph>
+          <CircularGraph
+            level={analyticsData.ipadBattery}
+            heading="Ipad Battery"
+          ></CircularGraph>
         </div>
       </div>
       <div
@@ -150,16 +163,28 @@ export default function AnalyticsAndReport() {
         }}
       >
         <div>
-          <RobotData heading="Distance" data={analyticsData.distance}></RobotData>
+          <RobotData
+            heading="Distance"
+            data={analyticsData.distance}
+          ></RobotData>
         </div>
         <div>
-          <RobotData heading="Total Uptime" data={analyticsData.totalUptime}></RobotData>
+          <RobotData
+            heading="Total Uptime"
+            data={analyticsData.totalUptime}
+          ></RobotData>
         </div>
         <div>
-          <RobotData heading="Total Task Completed" data={analyticsData.totalTaskCompleted}></RobotData>
+          <RobotData
+            heading="Total Task Completed"
+            data={analyticsData.totalTaskCompleted}
+          ></RobotData>
         </div>
         <div>
-          <RobotData heading="Total Task Completed Today" data={analyticsData.totalTaskCompletedToday}></RobotData>
+          <RobotData
+            heading="Total Task Completed Today"
+            data={analyticsData.totalTaskCompletedToday}
+          ></RobotData>
         </div>
       </div>
       <div
@@ -177,13 +202,22 @@ export default function AnalyticsAndReport() {
           ></RobotData>
         </div>
         <div>
-          <RobotData heading="Total Conversations" data={analyticsData.totalConversations}></RobotData>
+          <RobotData
+            heading="Total Conversations"
+            data={analyticsData.totalConversations}
+          ></RobotData>
         </div>
         <div>
-          <RobotData heading="Total Conversations Today" data={analyticsData.totalConversationsToday}></RobotData>
+          <RobotData
+            heading="Total Conversations Today"
+            data={analyticsData.totalConversationsToday}
+          ></RobotData>
         </div>
         <div>
-          <RobotData heading="Average Conversation time" data={analyticsData.averageConversationTime}></RobotData>
+          <RobotData
+            heading="Average Conversation time"
+            data={analyticsData.averageConversationTime}
+          ></RobotData>
         </div>
       </div>
     </div>
