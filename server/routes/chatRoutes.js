@@ -163,13 +163,13 @@ router.post('/signup', async (req, res) => {
     const { fullName, email, password } = req.body;
 
     if (!email || !password || !fullName) {
-        return res.status(400).json({ error: 'Name, email and password are required.' });
+        return res.status(400).json({ error: 'Name, email, and password are required.' });
     }
 
     try {
         const existingUser = await ChatbotUser.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ error: 'Username already taken.' });
+            return res.status(400).json({ error: 'Email ID already taken.' });
         }
 
         const newUser = new ChatbotUser({ fullName, email, password });
@@ -187,18 +187,18 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ error: 'Username and password are required.' });
+        return res.status(400).json({ error: 'email and password are required.' });
     }
 
     try {
         const user = await ChatbotUser.findOne({ email });
         if (!user) {
-            return res.status(400).json({ error: 'Invalid username or password.' });
+            return res.status(400).json({ error: 'Invalid email or password.' });
         }
 
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
-            return res.status(400).json({ error: 'Invalid username or password.' });
+            return res.status(400).json({ error: 'Invalid email or password.' });
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
