@@ -87,7 +87,7 @@ export default function RobotDetails() {
   };
 
   return (
-    <div className="dashboard-content dashboard-content-robo">
+    <div className="dashboard-content dashboard-content-robo" style={{marginLeft:"40px"}}>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -245,7 +245,7 @@ export default function RobotDetails() {
                       >
                         <i
                           class="fa-solid fa-pen"
-                          style={{ color: "white" }}
+                          style={{ color: "black" }}
                         ></i>
                       </button>
                     )}

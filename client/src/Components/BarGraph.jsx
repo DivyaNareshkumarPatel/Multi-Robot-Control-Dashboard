@@ -1,39 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
- Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ComposedChart
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  ComposedChart
 } from 'recharts';
 
-const defaultData = [
-  { month: 'Jan', tasksGiven: 10, tasksCompleted: 8 },
-  { month: 'Feb', tasksGiven: 15, tasksCompleted: 13 },
-  { month: 'Mar', tasksGiven: 7, tasksCompleted: 6 },
-  { month: 'Apr', tasksGiven: 20, tasksCompleted: 18 },
-  { month: 'May', tasksGiven: 25, tasksCompleted: 23 },
-  { month: 'Jun', tasksGiven: 18, tasksCompleted: 15 },
-  { month: 'Jul', tasksGiven: 30, tasksCompleted: 28 },
-  { month: 'Aug', tasksGiven: 22, tasksCompleted: 20 },
-  { month: 'Sep', tasksGiven: 17, tasksCompleted: 15 },
-  { month: 'Oct', tasksGiven: 12, tasksCompleted: 10 },
-  { month: 'Nov', tasksGiven: 8, tasksCompleted: 7 },
-  { month: 'Dec', tasksGiven: 10, tasksCompleted: 9 },
-];
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const BarGraph = ({ robotId }) => {
-  const [data, setData] = useState(defaultData);
+const BarGraph = ({ robotId, commandLogs = [] }) => {
+  const [data, setData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState('All');
+  const [selectedMonth, setSelectedMonth] = useState('All');
+
+  // Group logs by year & month
+  const groupedLogs = useMemo(() => {
+    const grouped = {};
+
+    commandLogs.forEach(log => {
+      console.log(log);
+      const date = new Date(`${log.date} ${log.time}`);
+      if (isNaN(date)) return;
+
+      const year = date.getFullYear();
+      const month = monthNames[date.getMonth()];
+      const key = `${year}-${month}`;
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          year,
+          month,
+          tasksGiven: 0,
+          tasksCompleted: 0,
+        };
+      }
+
+      grouped[key].tasksGiven += 1;
+      if (log.status === 'completed') grouped[key].tasksCompleted += 1;
+    });
+
+    return Object.values(grouped).sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      return monthNames.indexOf(a.month) - monthNames.indexOf(b.month);
+    });
+  }, [commandLogs]);
+
+  const allYears = useMemo(() => {
+    const years = commandLogs
+      .map(log => {
+        const date = new Date(`${log.date} ${log.time}`);
+        return isNaN(date) ? null : date.getFullYear();
+      })
+      .filter(Boolean);
+    return ['All', ...Array.from(new Set(years))];
+  }, [commandLogs]);
+
+  const filteredMonths = useMemo(() => {
+    return ['All', ...Array.from(new Set(
+      groupedLogs
+        .filter(d => selectedYear === 'All' || d.year === +selectedYear)
+        .map(d => d.month)
+    ))];
+  }, [groupedLogs, selectedYear]);
 
   useEffect(() => {
-    if (robotId) {
-      const robotHash = robotId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
-      
-      const newData = defaultData.map(item => ({
-        ...item,
-        tasksGiven: Math.max(5, Math.floor(item.tasksGiven * (1 + robotHash / 10))),
-        tasksCompleted: Math.max(3, Math.floor(item.tasksCompleted * (1 + robotHash / 10)))
-      }));
-      
-      setData(newData);
-    }
-  }, [robotId]);
+    const filtered = groupedLogs.filter(item => {
+      const yearMatch = selectedYear === 'All' || item.year === +selectedYear;
+      const monthMatch = selectedMonth === 'All' || item.month === selectedMonth;
+      return yearMatch && monthMatch;
+    });
+
+    setData(filtered);
+  }, [groupedLogs, selectedYear, selectedMonth]);
 
   return (
     <div
@@ -42,27 +85,53 @@ const BarGraph = ({ robotId }) => {
         maxWidth: '600px',
         height: '500px',
         margin: '0 auto',
-        backgroundColor: '#1F1B26',
+        backgroundColor: '#fff',
         padding: '20px',
         borderRadius: '12px',
-        color: 'white',
+        color: '#000',
       }}
     >
-      <h3 style={{ textAlign: 'center', color: 'white', marginBottom: '10px' }}>
-        {robotId ? `${robotId} - Monthly Tasks Given vs Completed` : 'Monthly Tasks Given vs Completed'}
+      <h3 style={{ textAlign: 'center', marginBottom: '10px' }}>
+        {robotId ? `${robotId} - Commands Overview` : 'Commands Overview'}
       </h3>
-      <ResponsiveContainer width="100%" height="90%">
+
+      {/* Filters */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
+        <div>
+          <label style={{ marginRight: '8px' }}>Year:</label>
+          <select value={selectedYear} onChange={e => {
+            setSelectedYear(e.target.value);
+            setSelectedMonth('All');
+          }}>
+            {allYears.map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label style={{ marginRight: '8px' }}>Month:</label>
+          <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
+            {filteredMonths.map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Chart */}
+      <ResponsiveContainer width="100%" height="80%">
         <ComposedChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-          <XAxis dataKey="month" stroke="white" />
-          <YAxis stroke="white" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <XAxis dataKey="month" stroke="#007bff" />
+          <YAxis stroke="#007bff" />
           <Tooltip
-            contentStyle={{ backgroundColor: '#1F1B26', border: 'none' }}
-            labelStyle={{ color: 'white' }}
-            itemStyle={{ color: 'white' }}
+            contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+            labelStyle={{ color: '#000' }}
+            itemStyle={{ color: '#000' }}
           />
-          <Bar dataKey="tasksGiven" fill="#9A4DFF" />
-          <Line dataKey="tasksCompleted" stroke="white" strokeWidth={2} dot={{ r: 4, fill: 'white' }} />
+          <Bar dataKey="tasksGiven" fill="#007bff" />
+          <Line dataKey="tasksCompleted" stroke="#6c757d" strokeWidth={2} dot={{ r: 4, fill: '#6c757d' }} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>

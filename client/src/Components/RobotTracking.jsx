@@ -36,7 +36,6 @@ export default function RobotTracking() {
   useEffect(() => {
     if (!isConnected) return;
 
-    // Listen for robot list updates
     const robotListUnsubscribe = webSocketService.addRobotListListener(
       (wsRobots) => {
         addLog(
@@ -45,7 +44,6 @@ export default function RobotTracking() {
       }
     );
 
-    // Listen for status updates
     const statusUnsubscribe = webSocketService.addStatusListener(
       (status, data) => {
         if (status === "disconnected") {
@@ -61,7 +59,6 @@ export default function RobotTracking() {
       }
     );
 
-    // Listen for other messages
     const messageUnsubscribe = webSocketService.addMessageListener(
       (message) => {
         if (message.type === "ack" || message.type === "error") {
@@ -268,7 +265,7 @@ export default function RobotTracking() {
             window.addEventListener("mouseup", onMouseUp);
           }}
         >
-          <i className="fa-solid fa-grip-lines drag-icon"></i>
+          <i className="fa-solid fa-grip-lines drag-icon" style={{color:"black"}}></i>
         </div>
 
         <div className="log-container">
@@ -292,9 +289,6 @@ export default function RobotTracking() {
         .drag-icon {
           font-size: 10px;
           color: white;
-        }
-        .active-tab {
-          background-color: #6a1db5;
         }
       `}</style>
     </div>

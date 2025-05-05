@@ -1,60 +1,64 @@
 .robot-select {
-    width: 100px;
-    padding: 8px;
-    border: 2px solid #4200FF;
-    border-radius: 5px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s ease-in-out;
+  width: 100px;
+  padding: 8px;
+  border: 2px solid #4200FF;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+  background-color: #ffffff;
+  color: black;
 }
 
 .robot-select:focus {
-    border-color: #e0c32f;
-    box-shadow: 0 0 5px rgba(224, 195, 47, 0.5);
+  border-color: #e0c32f;
+  box-shadow: 0 0 5px rgba(224, 195, 47, 0.5);
 }
 
 .robot-input {
-    width: 150px;
-    padding: 8px;
-    border: 2px solid #4200FF;
-    border-radius: 5px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s ease-in-out;
-  }
-  
-  .robot-input:focus {
-    border-color: #e0c32f;
-    box-shadow: 0 0 5px rgba(224, 195, 47, 0.5);
-  }
-  
-  .assign-btn {
-    margin-left: 10px;
-    padding: 6px 12px;
-    background-color: #4200FF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .assign-btn:hover {
-    background-color: #3400cc;
-  }
-  
-  .assigned-robot {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: bold;
-  }
-  
-  .remove-icon {
-    color: red;
-    cursor: pointer;
-  }
-  
-  .remove-icon:hover {
-    color: darkred;
-  }
-  
+  width: 150px;
+  padding: 8px;
+  border: 2px solid #4200FF;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+  background-color: #ffffff;
+  color: black;
+}
+
+.robot-input:focus {
+  border-color: #e0c32f;
+  box-shadow: 0 0 5px rgba(224, 195, 47, 0.5);
+}
+
+.assign-btn {
+  margin-left: 10px;
+  padding: 6px 12px;
+  background-color: #4200FF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.assign-btn:hover {
+  background-color: #3400cc;
+}
+
+.assigned-robot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  color: black;
+}
+
+.remove-icon {
+  color: red;
+  cursor: pointer;
+}
+
+.remove-icon:hover {
+  color: darkred;
+}

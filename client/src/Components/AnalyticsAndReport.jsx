@@ -95,15 +95,15 @@ export default function AnalyticsAndReport() {
   }
 
   return (
-    <div>
-      <div className="robot-selector" style={{ margin: "20px" }}>
+    <div style={{background:"rgb(244, 244, 244)" , paddingTop:"0.5px"}}>
+      <div className="robot-selector" style={{ margin: "20px"}}>
         <label>Select Robot: </label>
         <select
           value={selectedRobot}
           onChange={(e) => setSelectedRobot(e.target.value)}
           style={{
-            backgroundColor: "#252526",
-            color: "#ffffff",
+            backgroundColor: "#ffffff",
+            color: "black",
             border: "1px solid #444",
             padding: "8px 12px",
             fontSize: "14px",

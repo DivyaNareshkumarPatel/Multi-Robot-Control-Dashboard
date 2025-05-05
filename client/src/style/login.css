@@ -12,19 +12,17 @@
     justify-content: space-between;
     align-items: center;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #1F1B26, #4D0686);
-    background-attachment: fixed;
+    background-color: #f4f7fc; /* Light background */
 }
 
 .loginLeft {
-    background-color: #1F1B26;
+    background-color: #007bff; /* Blue color */
     height: 100vh;
     width: 50vw;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    background: linear-gradient(45deg, #1F1B26, #4D0686);
     box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -35,23 +33,23 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #1F1B26;
+    background-color: white;
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
 }
 
 .loginTitle {
     font-size: 2rem;
     font-weight: bold;
-    color: #9A4DFF;
+    color: #007bff; /* Blue color */
     margin-bottom: 5px;
     letter-spacing: 2px;
 }
 
 .loginWelcome {
     font-size: 1.5rem;
-    color: white;
+    color: #444; /* Darker grey for better readability */
     margin-bottom: 20px;
     font-weight: 300;
 }
@@ -62,12 +60,11 @@
     align-items: center;
     flex-direction: column;
     overflow-y: scroll;
-    /* overflow-x: visible; */
     width: 100%;
     max-width: 450px;
 }
 
-.loginForm::-webkit-scrollbar{
+.loginForm::-webkit-scrollbar {
     width: 0;
 }
 
@@ -84,17 +81,17 @@
     width: 80%;
     padding: 15px;
     font-size: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc; /* Lighter border color */
     border-radius: 10px;
-    color: white;
-    background-color: #1E1E1E;
+    color: #444; /* Darker text for better contrast */
+    background-color: #f9f9f9; /* Light background for inputs */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
 
 .loginInput:focus {
     outline: none;
-    border-color: #9A4DFF;
+    border-color: #007bff; /* Blue on focus */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -105,11 +102,10 @@
 .submitButtonWrapper {
     text-align: center;
     width: 88%;
-    /* margin-bottom: 20px; */
 }
 
 .loginButton {
-    background: linear-gradient(135deg, #9A4DFF, #4D0686);
+    background-color: #007bff; /* Blue background */
     color: white;
     padding: 12px 20px;
     font-size: 1rem;
@@ -121,29 +117,29 @@
 }
 
 .loginButton:hover {
-    background: linear-gradient(135deg, #4D0686, #9A4DFF);
+    background-color: #0056b3; /* Darker blue on hover */
     transform: translateY(-3px);
 }
 
 .signupPrompt {
     margin-top: 20px;
     font-size: 1rem;
-    color: white;
+    color: #444; /* Dark grey for the text */
 }
 
 .signupLink {
-    color: #9A4DFF;
+    color: #007bff; /* Blue link color */
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .signupLink:hover {
-    color: #4D0686;
+    color: #0056b3; /* Darker blue on hover */
 }
 
 .errorText {
-    color: #f1a1a1;
+    color: #f1a1a1; /* Light red for errors */
     font-size: 0.75rem;
     margin-top: 5px;
 }
@@ -155,7 +151,7 @@
 
 .successMessage {
     color: #ffffff;
-    background-color: #c3e6cb;
+    background-color: #c3e6cb; /* Greenish for success messages */
     border: 1px solid #b1dfbb;
     padding: 10px;
     border-radius: 5px;
@@ -165,7 +161,7 @@
 
 .errorMessage {
     color: #721c24;
-    background-color: #f8d7da;
+    background-color: #f8d7da; /* Light red for error messages */
     border: 1px solid #f5c6cb;
     padding: 10px;
     border-radius: 5px;
@@ -187,13 +183,13 @@
 
 .messageWrapper.success {
     color: #ffffff;
-    background-color: #34A853;
+    background-color: #34A853; /* Green for success */
     border: 1px solid #2c8b3e;
 }
 
 .messageWrapper.error {
     color: #721c24;
-    background-color: #f8d7da;
+    background-color: #f8d7da; /* Light red for error */
     border: 1px solid #f5c6cb;
 }
 
@@ -213,7 +209,7 @@
 }
 
 .loginButton {
-    background: linear-gradient(135deg, #4D0686, #9A4DFF);
+    background-color: #007bff; /* Blue background */
     color: white;
     margin-top: 10px;
     padding: 12px 20px;
@@ -226,22 +222,22 @@
 }
 
 .loginButton:hover {
-    background: linear-gradient(135deg, #4D0686, #9A4DFF);
+    background-color: #0056b3; /* Darker blue on hover */
 }
 
-select{
-    color: #666;
+select {
+    color: #444; /* Dark grey for the select options */
 }
 
-.option::selection{
-    background-color: #9A4DFF;
+.option::selection {
+    background-color: #007bff; /* Blue selection color */
 }
 
 @media screen and (max-width: 670px) {
-    .loginLeft{
+    .loginLeft {
         display: none;
     }
-    .rightLogin{
+    .rightLogin {
         width: 100vw;
     }
 }

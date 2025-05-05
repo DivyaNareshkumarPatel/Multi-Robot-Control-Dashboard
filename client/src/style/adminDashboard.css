@@ -1,21 +1,21 @@
 .dashboard-container {
   display: flex;
   height: 100vh;
-  background-color: #1F1B26;
-  color: white;
+  background-color: #f8f9fa; /* Light gray background for professionalism */
+  color: #333333; /* Dark gray text for contrast */
   overflow: hidden;
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .sidebar {
   width: 4rem;
-  background-color: #1F1B26;
+  background-color: #007bff; /* Professional blue background */
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  /* padding-top: 1.25rem; */
   gap: 1.5rem;
+  padding: 1rem 0;
 }
 
 .icon-container {
@@ -24,8 +24,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* padding: 0.75rem; */
-  /* margin-top: 100px; */
   border-radius: 0.5rem;
   cursor: pointer;
 }
@@ -33,12 +31,12 @@
 .icon {
   width: 20px;
   height: 20px;
-  color: #0A090D;
+  color: #ffffff; /* White icons */
   transition: color 0.3s ease-in-out;
 }
 
 .icon-container.active .icon {
-  color: #9A4DFF;
+  color: #f7f7f7; /* Lighter color when active */
 }
 
 .dot {
@@ -46,54 +44,54 @@
   right: -5px;
   top: 50%;
   transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
-  background-color: #9A4DFF;
+  width: 6px;
+  height: 6px;
+  background-color: #f7f7f7; /* Light dot to match the active icon */
   border-radius: 50%;
 }
 
 /* Dashboard Content */
 .dashboard-content {
   flex: 1;
-  /* padding: 1rem; */
-  background-color: #0A090D;
+  background-color: #ffffff; /* Clean white background */
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: center; */
+  /* padding: 2rem; */
 }
 
 .dashboard-content h1 {
-  color: white;
-  font-size: 24px;
+  color: #343a40; /* Slightly darker gray for headings */
+  font-size: 28px;
   margin-bottom: 1rem;
 }
 
-.table-container{
+.table-container {
   width: 100%;
-  border-radius: 5px;
-  /* padding: 20px; */
-  background-color: #1F1B26;
+  border-radius: 8px;
+  background-color: #ffffff; /* White background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
 }
 
-.user-table{
-  border-collapse:collapse ;
+.user-table {
+  border-collapse: collapse;
   width: 100%;
 }
 
 .user-table tr:nth-child(even) {
-  background-color: #1F1B26;
-  border: #1F1B26;
+  background-color: #f1f3f5; /* Subtle alternate row color */
+  color: black;
 }
 
-.user-table th{
-  background-color: #1F1B26;
-  height: 50px;
+.user-table th {
+  background-color: #343a40; /* Dark gray for table headers */
+  color: #ffffff;
+  padding: 15px;
+  text-align: left;
 }
 
 .user-table tr:nth-child(odd) {
-  background-color: #191620;
-  border: #191620;
+  background-color: #ffffff; /* White background for odd rows */
+  color: black;
 }
 
 .user-table, .user-table th, .user-table td {
@@ -101,15 +99,16 @@
 }
 
 .user-permissions {
-  background-color: #1F1B26;
+  background-color: #ffffff;
   padding: 2rem;
   border-radius: 10px;
   text-align: center;
   width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
 }
 
 .user-permissions h2 {
-  color: #9A4DFF;
+  color: #007bff; /* Blue for heading */
   margin-bottom: 1rem;
 }
 
@@ -117,7 +116,7 @@
   margin: 0.5rem 0;
 }
 
-.user-table td{
+.user-table td {
   height: 40px;
   text-align: center;
 }
@@ -129,46 +128,43 @@
 
 .approve, .reject {
   display: flex;
-  /* align-items: center; */
   gap: 8px;
-  /* padding: 0.75rem 1.5rem; */
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
+  padding: 8px 16px;
   transition: background 0.3s ease-in-out;
 }
 
 .approve {
-  background-color: transparent;
+  background-color: #28a745; /* Green for approve */
   color: white;
 }
 
 .reject {
-  background-color: transparent;
+  background-color: #dc3545; /* Red for reject */
   color: white;
 }
 
 .approve:hover {
-  color: #3e8e41;
+  background-color: #218838; /* Darker green on hover */
 }
 
 .reject:hover {
-  color: #c62828;
+  background-color: #c82333; /* Darker red on hover */
 }
 
 /* Status Message */
 .approved {
-  color: #4CAF50;
+  color: #28a745;
   font-weight: bold;
-  /* margin-top: 1rem; */
 }
 
 .rejected {
-  color: #EA4335;
+  color: #dc3545;
   font-weight: bold;
-  /* margin-top: 1rem; */
 }
 
 .icon-check, .icon-cross {
@@ -179,9 +175,10 @@
 .dashboard-container {
   display: flex;
   height: 100vh;
-  background-color: #1F1B26;
-  color: white;
-  font-family: Arial, sans-serif;
+  background-color: #f8f9fa; /* Light gray background for professionalism */
+  color: #333333; /* Dark gray text for contrast */
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
 }
 
 .icon-container {
@@ -191,7 +188,6 @@
   align-items: center;
   justify-content: center;
   padding: 0.75rem;
-  /* margin-top: 100px; */
   border-radius: 0.5rem;
   cursor: pointer;
 }
@@ -199,12 +195,12 @@
 .icon {
   width: 20px;
   height: 20px;
-  color: white;
+  color: #ffffff; /* White icons */
   transition: color 0.3s ease-in-out;
 }
 
 .icon-container.active .icon {
-  color: #9A4DFF;
+  color: #f7f7f7; /* Lighter color when active */
 }
 
 .dot {
@@ -212,23 +208,23 @@
   right: -5px;
   top: 50%;
   transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
-  background-color: #9A4DFF;
+  width: 6px;
+  height: 6px;
+  background-color: #f7f7f7; /* Light dot to match the active icon */
   border-radius: 50%;
 }
 
 /* Dashboard Content */
 .dashboard-content {
   flex: 1;
-  /* padding: 1rem; */
-  background-color: #0A090D;
+  /* background-color: #cabdbd; Clean white background */
   display: flex;
   flex-direction: column;
+  /* padding: 2rem; */
 }
 
 .dashboard-content h1 {
-  color: white;
-  font-size: 24px;
+  color: #343a40; /* Slightly darker gray for headings */
+  font-size: 28px;
   margin-bottom: 1rem;
 }

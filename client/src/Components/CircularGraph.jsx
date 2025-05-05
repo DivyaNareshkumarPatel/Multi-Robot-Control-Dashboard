@@ -8,7 +8,7 @@ export default function CircularGraph({ level, heading }) {
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference - (circumference * level) / 100;
 
-  const getColor = (level) => '#9A4DFF';
+  const getColor = (level) => '#007bff'; // Using #007bff blue color
 
   const styles = {
     wrapper: {
@@ -26,21 +26,22 @@ export default function CircularGraph({ level, heading }) {
       transform: 'translate(-50%, -50%)',
       fontWeight: 'bold',
       fontSize: '1.4rem',
-      color: '#ffffff',
-      fontFamily :'Arial, sans-serif'
+      color: '#007bff', // Text in blue for light theme
+      fontFamily: 'Arial, sans-serif',
     },
     heading: {
       textAlign: 'center',
-      color: '#ffffff',
+      color: '#007bff', // Heading in blue
       marginTop: '10px',
       fontWeight: '600',
-      fontFamily :'Arial, sans-serif'
+      fontFamily: 'Arial, sans-serif',
     },
     container: {
-      background: '#1F1B26',
+      background: '#ffffff', // White background for light mode
       padding: '10px 50px',
       borderRadius: '12px',
       display: 'inline-block',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Light shadow for depth
     },
   };
 
@@ -52,7 +53,7 @@ export default function CircularGraph({ level, heading }) {
             cx={center}
             cy={center}
             r={radius}
-            stroke="#4D0686"
+            stroke="#D3D3D3" // Light gray for the background circle
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -65,7 +66,6 @@ export default function CircularGraph({ level, heading }) {
             fill="none"
             strokeDasharray={circumference}
             strokeDashoffset={dashOffset}
-            // strokeLinecap="round"
           />
         </svg>
         <div style={styles.label}>{level}%</div>

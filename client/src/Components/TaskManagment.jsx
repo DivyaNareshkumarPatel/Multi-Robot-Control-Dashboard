@@ -56,7 +56,8 @@ export default function TaskManagment() {
           command: cmd.command,
           status: cmd.status || 'completed',
           response: cmd.response || `Robot ${selectedRobot} executed "${cmd.command}" successfully`,
-          time: new Date(cmd.createdAt).toLocaleTimeString()
+          time: new Date(cmd.createdAt).toLocaleTimeString(),
+          date: new Date(cmd.createdAt).toLocaleDateString(),
         }));
         
         setCommandLogs(formattedLogs);
@@ -76,6 +77,8 @@ export default function TaskManagment() {
       height: "100vh",
       scrollbarWidth: "none",
       msOverflowStyle: "none",
+      backgroundColor: "#f4f4f4",  // Light background color for light mode
+      color: "#000",  // Text color for light mode
     }}>
       <div>
         <div className="robot-selector" style={{ margin: "20px" }}>
@@ -84,9 +87,9 @@ export default function TaskManagment() {
             value={selectedRobot} 
             onChange={(e) => setSelectedRobot(e.target.value)}
             style={{
-              backgroundColor: "#252526",
-              color: "#ffffff",
-              border: "1px solid #444",
+              backgroundColor: "#fff",  // White background for light mode
+              color: "#000",  // Dark text for readability in light mode
+              border: "1px solid #ccc",  // Light border for input fields
               padding: "8px 12px",
               fontSize: "14px",
               borderRadius: "5px",
@@ -110,7 +113,7 @@ export default function TaskManagment() {
             margin: "20px",
           }}
         >
-          <BarGraph robotId={selectedRobot} />
+          <BarGraph robotId={selectedRobot} commandLogs={commandLogs} />
           <BarGraphHorizontal robotId={selectedRobot} />
         </div>
         <div>

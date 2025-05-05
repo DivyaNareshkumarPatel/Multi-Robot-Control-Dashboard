@@ -237,6 +237,7 @@ export const getRobotByEmail = async(email) => {
 export const getCommandHistory = async(robotId, limit = 50) => {
     try {
         const response = await axios.get(`${url}/api/robot/robots/${robotId}/commands?limit=${limit}`);
+        console.log(response)
         return response;
     }
     catch (error) {

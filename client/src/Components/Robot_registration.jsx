@@ -63,7 +63,7 @@ const RobotRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
@@ -82,7 +82,7 @@ const RobotRegistration = () => {
           manufacturer: "",
           yearOfManufacture: "",
         });
-        
+
         // Clear success message after 3 seconds
         setTimeout(() => {
           setSuccessMessage("");
@@ -91,7 +91,7 @@ const RobotRegistration = () => {
         setErrors({
           general: response.data.message || "Registration failed.",
         });
-        
+
         // Clear error message after 3 seconds
         setTimeout(() => {
           setErrors({});
@@ -196,11 +196,22 @@ const styles = {
     overflowX: "hidden",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    background:"rgb(244, 244, 244)",
+     height:"100vh"
+    // alignItems: "center",
   },
-  header: { color: "white", fontSize: "24px", marginBottom: "20px" },
-  successMessage: { color: "#4CAF50", fontSize: "18px", marginBottom: "10px" },
-  errorMessage: { color: "#ff4d4d", fontSize: "14px", marginTop: "5px" },
+  header: { color: "black", fontSize: "24px", marginBottom: "20px", marginLeft:"40px" },
+  successMessage: { 
+    color: "#388E3C",  // Darker green for success in light mode
+    fontSize: "18px", 
+    marginBottom: "10px" 
+  },
+  
+  errorMessage: { 
+    color: "#D32F2F",  // Darker red for error in light mode
+    fontSize: "14px", 
+    marginTop: "5px" 
+  },
   form: {
     width: "80%",
     maxWidth: "700px",
@@ -219,21 +230,22 @@ const styles = {
   label: {
     width: "90%",
     fontSize: "16px",
-    color: "white",
     marginBottom: "5px",
+    color: "black",
   },
   input: {
     width: "90%",
     padding: "10px",
-    backgroundColor: "#191620",
-    border: "1px solid white",
-    borderRadius: "8px",
-    color: "#fff",
+    backgroundColor: "#ffffff", // Lighter background color for light mode
+    border: "1px solid black", // Light border color
+    borderRadius: "8px", // Dark text color for better readability
     fontSize: "14px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)"
   },
+
   submitButton: {
     padding: "12px 25px",
-    backgroundColor: "#8a2be2",
+    backgroundColor: "#007BFF",
     color: "#fff",
     border: "none",
     borderRadius: "8px",

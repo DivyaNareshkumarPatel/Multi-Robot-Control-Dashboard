@@ -26,16 +26,22 @@ export default function User() {
           Assign Robots To Users
         </div>
       </nav>
-      <h1
-        className="title"
-        style={{ paddingLeft: "20px", marginBottom: "10px", marginTop: "15px" }}
-      >
-        {userActiveTab === "userDetails"
-          ? "User Details"
-          : "Assign Robots To Users"}
-      </h1>
-      <div className="content">
-        {userActiveTab === "userDetails" ? <UserDetails /> : <AssignRobots />}
+      <div>
+        <h1
+          className="title"
+          style={{
+            paddingLeft: "20px",
+            marginBottom: "10px",
+            marginTop: "15px",
+          }}
+        >
+          {userActiveTab === "userDetails"
+            ? "User Details"
+            : "Assign Robots To Users"}
+        </h1>
+        <div className="content" style={{background:"rgb(244, 244, 244)"}}>
+          {userActiveTab === "userDetails" ? <UserDetails /> : <AssignRobots />}
+        </div>
       </div>
     </div>
   );

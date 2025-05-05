@@ -309,8 +309,8 @@ export default function UserDetails() {
       <div style={{ textAlign: "center", position: "fixed", top: "30px", right: "20px" }}>
         <button
           style={{
-            marginTop: "20px",
-            background: "#8a2be2",
+            marginTop: "30px",
+            background: "#007bff",
             color: "white",
             border: "0",
             outline: "0",
