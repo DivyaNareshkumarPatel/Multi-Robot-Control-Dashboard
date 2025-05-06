@@ -3,6 +3,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { sendCommandToRobot } = require('../websocket/robotSocketServer');
 const ChatbotUser = require('../models/Chatbot');
 const jwt = require('jsonwebtoken');
+const {broadcastChatHistory} = require('../websocket/chatWebSocket')
 const mongoose = require('mongoose');
 const ChatHistory = require('../models/Chat');
 const CommandHistory = require('../models/CommandHistory');
@@ -252,5 +253,17 @@ router.post('/new-chat', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Failed to start new chat.' });
     }
 });
+
+router.get('/get-all-chats', async(req, res)=>{
+    try{
+        const chats = await ChatHistory.find();
+        broadcastChatHistory(chats);
+        return res.status(200).json(chats);
+    }
+    catch(error){
+        console.error(error);
+    return res.status(500).json({ message: "Error fetching chats" });
+    }
+})
 
 module.exports = router;

@@ -245,3 +245,13 @@ export const getCommandHistory = async(robotId, limit = 50) => {
         return { data: [] };
     }
 }
+
+export const getAllChats = async() => {
+    try{
+        const response = await axios.get(`${url}/api/chat/get-all-chats`);
+        return response;
+    }
+    catch(error){
+        return error;
+    }
+}

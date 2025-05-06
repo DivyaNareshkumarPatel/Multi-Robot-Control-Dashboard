@@ -4,6 +4,7 @@ import User from "../Components/User";
 import RobotRegistration from "../Components/Robot_registration";
 import RobotTracking from "../Components/RobotTracking";
 import Report from "../Components/Report";
+import LiveChat from "../Components/LiveChat";
 
 export default function AdminDashboard() {
   const [active, setActive] = useState(() => {
@@ -42,8 +43,15 @@ export default function AdminDashboard() {
           className={`icon-container ${active === "report" ? "active" : ""}`}
           onClick={() => setActive("report")}
         >
-          <i class="fa-regular fa-rectangle-list icon"></i>
+          <i className="fa-regular fa-rectangle-list icon"></i>
           {active === "report" && <span className="dot"></span>}
+        </div>
+        <div
+          className={`icon-container ${active === "liveChat" ? "active" : ""}`}
+          onClick={() => setActive("liveChat")}
+        >
+          <i className="fa-solid fa-comment icon"></i>
+          {active === "liveChat" && <span className="dot"></span>}
         </div>
       </div>
 
@@ -51,7 +59,8 @@ export default function AdminDashboard() {
         {active === "user" && <User />}
         {active === "robotRegistration" && <RobotRegistration />}
         {active === "robotTracking" && <RobotTracking />}
-        {active === "report" && <Report/>}
+        {active === "report" && <Report />}
+        {active === "liveChat" && <LiveChat />}
       </div>
     </div>
   );
