@@ -1,19 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getAllChats } from '../api/api';
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:3000');
 
 export default function LiveChatDashboard() {
   const [chats, setChats] = useState([]);
-  const messagesEndRef = useRef(null); // Create a reference for the messages container
+  const messagesEndRef = useRef(null); 
 
-  // Fetch existing chats initially
+  const [socket, setSocket] = useState(null);
+
   useEffect(() => {
     const fetchChats = async () => {
       try {
         const response = await getAllChats();
-        setChats(response.data); // Assuming the response contains an array of chats
+        setChats(response.data); 
       } catch (error) {
         console.error('Error fetching chats:', error);
       }
@@ -21,35 +19,77 @@ export default function LiveChatDashboard() {
 
     fetchChats();
 
-    // Listen for new messages via WebSocket
-    socket.on('new_message', (newMessage) => {
-      setChats((prevChats) => {
-        // Find the chat that the new message belongs to
-        const updatedChats = prevChats.map((chat) => {
-          if (chat._id === newMessage.chatId) {
-            return {
-              ...chat,
-              messages: [...chat.messages, newMessage], // Append the new message to the correct chat
-            };
-          }
-          return chat;
-        });
-        return updatedChats;
-      });
-    });
+    console.log('Connecting to WebSocket server...');
+    const ws = new WebSocket('ws://localhost:5000/chat');
+    
+    ws.onopen = () => {
+      console.log('WebSocket connection established');
+      setSocket(ws);
+    };
 
-    // Clean up the WebSocket connection when the component unmounts
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('WebSocket message received:', data);
+        console.log('Message type:', data.type);
+        
+        if (data.type === 'chat-update') {
+          setChats(prevChats => {
+            const updatedChats = prevChats.map(chat => {
+              if (chat._id === data.data._id) {
+                return data.data; 
+              }
+              return chat;
+            });
+            
+            if (!prevChats.some(chat => chat._id === data.data._id)) {
+              return [...prevChats, data.data];
+            }
+            
+            return updatedChats;
+          });
+        } else if (data.type === 'chat-history') {
+          setChats(data.data);
+        } else if (data.type === 'new-message') {
+          setChats(prevChats => {
+            const updatedChats = prevChats.map(chat => {
+              if (chat._id === data.chatId) {
+                return {
+                  ...chat,
+                  messages: [...chat.messages, data.message]
+                };
+              }
+              return chat;
+            });
+            return updatedChats;
+          });
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+      setSocket(null);
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
     return () => {
-      socket.off('new_message');
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
     };
   }, []);
 
-  // Scroll to the bottom whenever the chats state changes (new messages added)
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to bottom with smooth animation
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [chats]); // Trigger when chats change
+  }, [chats]);
 
   const chatWindowStyles = {
     display: 'flex',
@@ -94,16 +134,24 @@ export default function LiveChatDashboard() {
   return (
     <div style={chatWindowStyles}>
       <div style={messagesContainerStyles}>
-        {chats.map((chat) => (
-          chat.messages.map((message, index) => (
-            <div
-              key={`${chat._id}-${index}`}
-              style={message.sender === "user" ? userMessageStyles : botMessageStyles}
-            >
-              <p>{message.text}</p>
-            </div>
+        {Array.isArray(chats) && chats.length > 0 ? (
+          chats.map((chat) => (
+            Array.isArray(chat?.messages) ? (
+              chat.messages.map((message, index) => (
+                <div
+                  key={`${chat._id || 'unknown'}-${index}`}
+                  style={message.sender === "user" ? userMessageStyles : botMessageStyles}
+                >
+                  <p>{message.text || ''}</p>
+                </div>
+              ))
+            ) : null
           ))
-        ))}
+        ) : (
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            <p>No chat messages available</p>
+          </div>
+        )}
         {/* Scroll indicator element */}
         <div ref={messagesEndRef} />
       </div>

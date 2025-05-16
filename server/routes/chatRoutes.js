@@ -61,6 +61,9 @@ router.post('/send', authenticateToken, async (req, res) => {
             { _id: chatId },
             { $push: { messages: userMessageData } }
         );
+        
+        const updatedChat = await ChatHistory.findById(chatId);
+        broadcastChatHistory(updatedChat);
 
         if (message && message.trim().toLowerCase().startsWith(COMMAND_PREFIX)) {
             const commandParts = message.substring(COMMAND_PREFIX.length).trim().split(' ');
@@ -73,6 +76,9 @@ router.post('/send', authenticateToken, async (req, res) => {
                     { _id: chatId },
                     { $push: { messages: { text: invalidCommandReply, sender: 'bot', timestamp: new Date() } } }
                 );
+                
+                const updatedChat = await ChatHistory.findById(chatId);
+                broadcastChatHistory(updatedChat);
                 return res.json({ reply: invalidCommandReply });
             }
 
@@ -85,6 +91,9 @@ router.post('/send', authenticateToken, async (req, res) => {
                     { _id: chatId },
                     { $push: { messages: { text: confirmationText, sender: 'bot', timestamp: new Date() } } }
                 );
+                
+                const updatedChat = await ChatHistory.findById(chatId);
+                broadcastChatHistory(updatedChat);
                 return res.json({ reply: confirmationText });
 
             } catch (error) {
@@ -94,6 +103,9 @@ router.post('/send', authenticateToken, async (req, res) => {
                     { _id: chatId },
                     { $push: { messages: { text: errorText, sender: 'bot', timestamp: new Date() } } }
                 );
+                
+                const updatedChat = await ChatHistory.findById(chatId);
+                broadcastChatHistory(updatedChat);
                 return res.json({ reply: errorText });
             }
         } 
@@ -131,6 +143,9 @@ router.post('/send', authenticateToken, async (req, res) => {
                         { _id: chatId },
                         { $push: { messages: { text: errorText, sender: 'bot', timestamp: new Date() } } }
                     );
+                    
+                    const updatedChat = await ChatHistory.findById(chatId);
+                    broadcastChatHistory(updatedChat);
                     return res.json({ reply: errorText }); 
                 }
             }
@@ -161,6 +176,9 @@ router.post('/send', authenticateToken, async (req, res) => {
                 { _id: chatId },
                 { $push: { messages: botMessageData } }
             );
+            
+            const updatedChat = await ChatHistory.findById(chatId);
+            broadcastChatHistory(updatedChat);
 
             res.json({ reply: botReplyText });
         }
@@ -209,6 +227,23 @@ router.post('/signup', async (req, res) => {
     } catch (error) {
         console.error('Signup error:', error);
         res.status(500).json({ error: 'Server error during signup.' });
+    }
+});
+
+router.get('/test-broadcast', async (req, res) => {
+    try {
+        const chat = await Chat.findOne();
+        if (!chat) {
+            return res.status(404).json({ error: 'No chats found to broadcast' });
+        }
+        
+        console.log('Broadcasting test chat update for chat ID:', chat._id);
+        broadcastChatHistory(chat);
+        
+        return res.json({ success: true, message: 'Test broadcast sent', chatId: chat._id });
+    } catch (error) {
+        console.error('Error in test broadcast:', error);
+        return res.status(500).json({ error: 'Error in test broadcast' });
     }
 });
 

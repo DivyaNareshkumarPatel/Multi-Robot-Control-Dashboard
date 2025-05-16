@@ -30,12 +30,22 @@ app.use('/api', chatBotApiRoutes);
 app.use('/api/userRobot', userRobotRoutes);
 app.use('/api/chat', chatRoutes);
 
-// Create HTTP server
 const server = http.createServer(app);
 
-// Initialize WebSocket server with the HTTP server
-const wss = initializeWebSocketServer(server);
-initWebSocket(server)
+const { wsServer: robotWss, handleUpgrade: handleRobotUpgrade } = initializeWebSocketServer();
+const { handleUpgrade: handleChatUpgrade } = initWebSocket();
+
+server.on('upgrade', (request, socket, head) => {
+  const pathname = new URL(request.url, 'http://localhost').pathname;
+  
+  if (pathname === '/robot') {
+    handleRobotUpgrade(request, socket, head);
+  } else if (pathname === '/chat') {
+    handleChatUpgrade(request, socket, head);
+  } else {
+    socket.destroy();
+  }
+})
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

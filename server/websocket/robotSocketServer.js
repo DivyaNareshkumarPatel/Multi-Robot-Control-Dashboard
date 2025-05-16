@@ -2,13 +2,11 @@ const WebSocket = require('ws');
 const Robot = require('../models/Robot');
 const CommandHistory = require('../models/CommandHistory');
 
-// Store connected robots and clients
-const robots = {}; // { robotId: { ws: WebSocket, apiKey: string } }
-const clients = {}; // { clientId: WebSocket }
+const robots = {};
+const clients = {};
 
-// Initialize WebSocket server with the HTTP server
-function initializeWebSocketServer(server) {
-    const wss = new WebSocket.Server({ server });
+function initializeWebSocketServer() {
+    const wss = new WebSocket.Server({ noServer: true });
     
     console.log('Robot WebSocket server initialized');
 
@@ -20,15 +18,11 @@ function initializeWebSocketServer(server) {
                 const data = JSON.parse(message);
                 
                 if (data.type === 'register') {
-                    // Register robot or client
                     if (data.role === 'robot') {
-                        // Verify the robot's API key
                         if (!data.apiKey) {
                             ws.send(JSON.stringify({ type: 'error', message: 'API key is required for robot registration' }));
                             return;
                         }
-
-                        // Validate API key against database
                         const robot = await Robot.findOne({ robotId: data.robotId, apiKey: data.apiKey });
                         if (!robot) {
                             ws.send(JSON.stringify({ type: 'error', message: 'Invalid robot ID or API key' }));
@@ -39,21 +33,17 @@ function initializeWebSocketServer(server) {
                         console.log(`Robot ${data.robotId} connected with valid API key`);
                         ws.send(JSON.stringify({ type: 'ack', message: `Robot ${data.robotId} registered` }));
                         
-                        // Notify all clients about new robot connection
                         broadcastRobotStatus(data.robotId, 'connected');
                     } else if (data.role === 'client') {
                         clients[data.clientId] = ws;
                         console.log(`Client ${data.clientId} connected`);
                         ws.send(JSON.stringify({ type: 'ack', message: `Client ${data.clientId} registered` }));
                         
-                        // Send list of available robots to the new client
                         sendAvailableRobots(ws);
                     }
                 } else if (data.type === 'control' && robots[data.robotId]) {
-                    // Forward control command to the selected robot
                     const robotData = robots[data.robotId];
                     
-                    // Create command history record
                     const commandHistory = new CommandHistory({
                         robotId: data.robotId,
                         command: data.command,
@@ -61,14 +51,13 @@ function initializeWebSocketServer(server) {
                     });
                     await commandHistory.save();
                     
-                    // Forward command with command history ID for reference
-                    robotData.ws.send(JSON.stringify({ 
+                    const commandMessage = { 
                         command: data.command,
                         commandId: commandHistory._id 
-                    }));
-                    console.log(`Sent command '${data.command}' to robot ${data.robotId}`);
+                    };
+                    robotData.ws.send(JSON.stringify(commandMessage));
+                    console.log(`Sent command '${data.command}' to robot ${data.robotId}`, commandMessage);
                 } else if (data.type === 'status' && data.robotId) {
-                    // Update command history record
                     if (data.commandId) {
                         try {
                             await CommandHistory.findByIdAndUpdate(
@@ -83,7 +72,6 @@ function initializeWebSocketServer(server) {
                         }
                     }
                     
-                    // Forward robot status to all clients
                     broadcastToClients({
                         type: 'robot_status',
                         robotId: data.robotId,
@@ -102,7 +90,6 @@ function initializeWebSocketServer(server) {
         });
 
         ws.on('close', () => {
-            // Remove disconnected clients or robots
             for (const id in robots) {
                 if (robots[id].ws === ws) {
                     console.log(`Robot ${id} disconnected`);
@@ -119,10 +106,19 @@ function initializeWebSocketServer(server) {
         });
     });
 
-    return wss;
+    function handleUpgrade(request, socket, head) {
+        console.log('Handling robot WebSocket upgrade for path:', request.url);
+        wss.handleUpgrade(request, socket, head, (ws) => {
+            wss.emit('connection', ws, request);
+        });
+    }
+
+    return {
+        wsServer: wss,
+        handleUpgrade
+    };
 }
 
-// Send list of available robots to the client
 function sendAvailableRobots(clientWs) {
     const availableRobots = Object.keys(robots).map(id => ({ id, status: 'connected' }));
     clientWs.send(JSON.stringify({
@@ -131,7 +127,6 @@ function sendAvailableRobots(clientWs) {
     }));
 }
 
-// Broadcast robot status change to all clients
 function broadcastRobotStatus(robotId, status) {
     broadcastToClients({
         type: 'robot_status_change',
@@ -141,7 +136,6 @@ function broadcastRobotStatus(robotId, status) {
     });
 }
 
-// Broadcast message to all connected clients
 function broadcastToClients(message) {
     const messageStr = JSON.stringify(message);
     Object.values(clients).forEach(client => {
@@ -151,11 +145,9 @@ function broadcastToClients(message) {
     });
 }
 
-// API to send command to a robot
 async function sendCommandToRobot(robotId, command, source = 'api', apiKey) {
     return new Promise(async (resolve, reject) => {
         try {
-            // Verify the robot exists and API key is valid
             const robot = await Robot.findOne({ robotId });
             
             if (!robot) {
@@ -163,7 +155,6 @@ async function sendCommandToRobot(robotId, command, source = 'api', apiKey) {
                 return;
             }
             
-            // Validate API key if provided
             if (apiKey && robot.apiKey !== apiKey) {
                 reject(new Error('Invalid API key for this robot'));
                 return;
@@ -176,7 +167,6 @@ async function sendCommandToRobot(robotId, command, source = 'api', apiKey) {
                 return;
             }
             
-            // Create command history record
             const commandHistory = new CommandHistory({
                 robotId,
                 command,
@@ -185,13 +175,13 @@ async function sendCommandToRobot(robotId, command, source = 'api', apiKey) {
             
             await commandHistory.save();
             
-            // Send command to robot
-            robotConnection.ws.send(JSON.stringify({ 
+            const commandMessage = {
                 command,
                 commandId: commandHistory._id 
-            }));
+            };
+            robotConnection.ws.send(JSON.stringify(commandMessage));
             
-            console.log(`API sent command '${command}' to robot ${robotId}`);
+            console.log(`API sent command '${command}' to robot ${robotId}`, commandMessage);
             resolve({ 
                 success: true, 
                 message: `Command sent to robot ${robotId}`,
@@ -204,12 +194,9 @@ async function sendCommandToRobot(robotId, command, source = 'api', apiKey) {
     });
 }
 
-// Get list of connected robots
 function getConnectedRobots() {
     return Object.keys(robots).map(id => ({ id, status: 'connected' }));
 }
-
-// Get command history for a robot
 async function getRobotCommandHistory(robotId, limit = 10) {
     try {
         const history = await CommandHistory.find({ robotId })

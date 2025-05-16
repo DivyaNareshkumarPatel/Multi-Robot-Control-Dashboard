@@ -1,29 +1,24 @@
 const WebSocket = require('ws');
 const readline = require('readline');
 
-// Configuration options
 const robotId = process.argv[2] || 'local-robot';
-const apiKey = process.argv[3] || 'test-api-key'; // API key should be provided as second argument
-const serverUrl = process.env.WS_SERVER_URL || 'ws://localhost:5000';
+const apiKey = process.argv[3] || 'test-api-key';
+const serverUrl = process.env.WS_SERVER_URL || 'ws://localhost:5000/robot';
+console.log(`Attempting to connect to WebSocket server at ${serverUrl}...`);
 
 console.log(`Starting robot simulation for: ${robotId}`);
 console.log(`Using API Key: ${apiKey.substring(0, 4)}*******`);
 
-// Create WebSocket connection
 const ws = new WebSocket(serverUrl);
-
-// Set up readline interface for console interaction
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-// Connection event handlers
 ws.on('open', () => {
     console.log(`\n[${robotId}] Connected to WebSocket server at ${serverUrl}`);
     console.log(`[${robotId}] Registering with server...`);
     
-    // Register as a robot with the server, including API key
     ws.send(JSON.stringify({ 
         type: 'register', 
         role: 'robot', 
@@ -36,7 +31,6 @@ ws.on('open', () => {
     console.log('Press Ctrl+C to disconnect\n');
 });
 
-// Message handling
 ws.on('message', (message) => {
     try {
         const data = JSON.parse(message);
@@ -50,11 +44,9 @@ ws.on('message', (message) => {
             console.log(`[${robotId}] Command ID: ${data.commandId || 'unknown'}`);
             console.log(`[${robotId}] Simulating command execution...`);
             
-            // Simulate execution delay
             setTimeout(() => {
                 console.log(`[${robotId}] Command "${data.command}" executed successfully`);
                 
-                // Send a status update back to the server with command ID
                 ws.send(JSON.stringify({
                     type: 'status',
                     robotId,
@@ -72,19 +64,15 @@ ws.on('message', (message) => {
     }
 });
 
-// Error handling
 ws.on('error', (error) => {
     console.error(`[ERROR] WebSocket error:`, error.message);
 });
-
-// Disconnection handling
 ws.on('close', () => {
     console.log(`\n[${robotId}] Disconnected from server`);
     rl.close();
     process.exit(0);
 });
 
-// Handle process termination
 process.on('SIGINT', () => {
     console.log(`\n[${robotId}] Shutting down...`);
     if (ws.readyState === WebSocket.OPEN) {

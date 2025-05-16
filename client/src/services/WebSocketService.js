@@ -1,5 +1,3 @@
-// WebSocket Service for connecting to the robot control WebSocket server
-
 class WebSocketService {
     constructor() {
         this.socket = null;
@@ -8,8 +6,9 @@ class WebSocketService {
         this.messageListeners = [];
         this.statusListeners = [];
         this.robotListListeners = [];
-        this.messageQueue = []; // Queue for messages when not connected
-        this.serverUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:5000';
+        this.messageQueue = [];
+        this.serverUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:5000/robot';
+        console.log('WebSocketService using URL:', this.serverUrl);
     }
 
     connect() {
@@ -19,25 +18,23 @@ class WebSocketService {
                 return;
             }
 
-            // Close existing socket if any
             if (this.socket) {
                 this.socket.close();
             }
 
+            console.log('Attempting to connect to WebSocket server:', this.serverUrl);
             this.socket = new WebSocket(this.serverUrl);
 
             this.socket.onopen = () => {
-                console.log('WebSocket connected');
+                console.log('WebSocket connected successfully');
                 this.isConnected = true;
                 
-                // Register as a client
                 this._sendMessageDirectly({
                     type: 'register',
                     role: 'client',
                     clientId: this.clientId
                 });
                 
-                // Process any queued messages
                 this._processQueue();
                 
                 resolve();
@@ -48,7 +45,6 @@ class WebSocketService {
                 this.isConnected = false;
                 this.notifyStatusListeners('disconnected');
                 
-                // Try to reconnect after 5 seconds
                 setTimeout(() => {
                     this.connect().catch(console.error);
                 }, 5000);
@@ -89,7 +85,6 @@ class WebSocketService {
         }
     }
 
-    // Process queued messages
     _processQueue() {
         while (this.messageQueue.length > 0 && this.isConnected) {
             const message = this.messageQueue.shift();
@@ -97,7 +92,6 @@ class WebSocketService {
         }
     }
 
-    // Send a message directly to the socket
     _sendMessageDirectly(message) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify(message));
@@ -106,28 +100,27 @@ class WebSocketService {
         return false;
     }
 
-    // Public method to send a message
     sendMessage(message) {
         if (this.isConnected && this.socket && this.socket.readyState === WebSocket.OPEN) {
             return this._sendMessageDirectly(message);
         } else {
-            // Queue the message for when we're connected
             this.messageQueue.push(message);
-            // Try to connect
             this.connect().catch(console.error);
             return false;
         }
     }
 
     sendCommand(robotId, command) {
-        return this.sendMessage({
+        console.log(`Sending command to robot ${robotId}: ${command}`);
+        const result = this.sendMessage({
             type: 'control',
             robotId,
             command
         });
+        console.log(`Command sent successfully: ${result}`);
+        return result;
     }
 
-    // Add a listener for general messages
     addMessageListener(listener) {
         this.messageListeners.push(listener);
         return () => {
@@ -135,7 +128,6 @@ class WebSocketService {
         };
     }
 
-    // Add a listener for connection status and robot status
     addStatusListener(listener) {
         this.statusListeners.push(listener);
         return () => {
@@ -143,7 +135,6 @@ class WebSocketService {
         };
     }
 
-    // Add a listener for robot list updates
     addRobotListListener(listener) {
         this.robotListListeners.push(listener);
         return () => {
@@ -151,7 +142,6 @@ class WebSocketService {
         };
     }
 
-    // Notify all message listeners
     notifyMessageListeners(message) {
         this.messageListeners.forEach(listener => {
             try {
@@ -162,7 +152,6 @@ class WebSocketService {
         });
     }
 
-    // Notify all status listeners
     notifyStatusListeners(status, data) {
         this.statusListeners.forEach(listener => {
             try {
@@ -173,7 +162,6 @@ class WebSocketService {
         });
     }
 
-    // Notify all robot list listeners
     notifyRobotListListeners(robots) {
         this.robotListListeners.forEach(listener => {
             try {
@@ -185,7 +173,6 @@ class WebSocketService {
     }
 }
 
-// Create a singleton instance
 const webSocketService = new WebSocketService();
 
 export default webSocketService; 
