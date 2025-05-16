@@ -10,6 +10,7 @@ const robotApiRoutes = require("./api/pushServerApi/robotDetails");
 const chatBotApiRoutes = require("./api/chatBotApi/api");
 const userRobotRoutes = require("./routes/robotUserRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const analytics = require("./routes/analyticsRoutes")
 const { initializeWebSocketServer } = require("./websocket/robotSocketServer");
 const {initWebSocket} = require("./websocket/chatWebSocket")
 
@@ -29,6 +30,7 @@ app.use('/api', robotApiRoutes);
 app.use('/api', chatBotApiRoutes);
 app.use('/api/userRobot', userRobotRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/anaytics', analytics)
 
 const server = http.createServer(app);
 

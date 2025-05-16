@@ -255,3 +255,13 @@ export const getAllChats = async() => {
         return error;
     }
 }
+
+export const getAnalytics = async(robotId) =>{
+    try{
+        const response = await axios.get(`${url}/api/anaytics/getData?robotId=${robotId}`);
+        return response
+    }
+    catch(error){
+        return error;
+    }
+}

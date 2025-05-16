@@ -13,7 +13,6 @@ const authenticate = (req, res, next) => {
     next();
 };
 
-// Get all connected robots
 router.get('/robots', (req, res) => {
     try {
         const robots = getConnectedRobots();
@@ -36,7 +35,6 @@ router.get('/robots/:robotId', authenticate, async (req, res) => {
     }
 });
 
-// Send command to a robot
 router.post('/robots/:robotId/command', async (req, res) => {
     const { robotId } = req.params;
     const { command } = req.body;
@@ -54,7 +52,6 @@ router.post('/robots/:robotId/command', async (req, res) => {
     }
 });
 
-// Endpoint for chatbot to send commands to robots
 router.post('/chatbot/command', async (req, res) => {
     const { robotId, command } = req.body;
     
@@ -79,6 +76,36 @@ router.post('/chatbot/command', async (req, res) => {
             message: 'Failed to send chatbot command', 
             error: error.message 
         });
+    }
+});
+
+router.get('/robots/:robotId/metrics', authenticate, async (req, res) => {
+    try {
+        const robot = await Robot.findOne({ robotId: req.params.robotId });
+        if (!robot) {
+            return res.status(404).json({ message: 'Robot not found' });
+        }
+
+        const [cpu, memory] = await Promise.all([
+            si.currentLoad(),
+            si.mem()
+        ]);
+
+        const cpuUsage = `${cpu.currentLoad.toFixed(2)}%`;
+        const ramUsage = `${((memory.active / memory.total) * 100).toFixed(2)}%`;
+
+        const battery = robot.battery || 'Unknown';
+        const ipadBattery = robot.iPadBattery || 'Unknown';
+
+        res.json({
+            battery,
+            cpuUsage,
+            ramUsage,
+            ipadBattery
+        });
+    } catch (error) {
+        console.error(`Error fetching metrics for robot ${req.params.robotId}:`, error);
+        res.status(500).json({ message: 'Failed to fetch metrics', error: error.message });
     }
 });
 

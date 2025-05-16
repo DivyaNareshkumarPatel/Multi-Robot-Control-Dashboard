@@ -50,7 +50,6 @@ export default function TaskManagment() {
       const response = await getCommandHistory(selectedRobot);
       
       if (response && response.data) {
-        // Format the command history for the CommandHistory component
         const formattedLogs = response.data.map((cmd, index) => ({
           id: cmd._id || index,
           command: cmd.command,

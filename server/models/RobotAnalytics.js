@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const RobotAnalyticsSchema = new mongoose.Schema(
   {
-    robot: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Robot",
+    robotId: {
+      type: String,
       required: true,
+      ref: "Robot",
       index: true,
     },
     battery: {
@@ -41,7 +41,6 @@ const RobotAnalyticsSchema = new mongoose.Schema(
   }
 );
 
-// Fix: avoid OverwriteModelError by checking if model exists
 const RobotAnalytics = mongoose.models.RobotAnalytics || mongoose.model("RobotAnalytics", RobotAnalyticsSchema);
 
 module.exports = RobotAnalytics;

@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from "react";
 import CircularGraph from "./CircularGraph";
 import RobotData from "./RobotData";
-import { getAllRobots, getRobotByEmail, getCommandHistory } from "../api/api";
+import { getAllRobots, getRobotByEmail, getCommandHistory, getAnalytics } from "../api/api";
 
 export default function AnalyticsAndReport() {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState("");
   const [analyticsData, setAnalyticsData] = useState({
-    battery: 30,
-    cpuUsage: 80,
-    ramUsage: 70,
-    ipadBattery: 50,
-    distance: "1000m",
-    totalUptime: "120 mins",
-    totalTaskCompleted: 100,
-    totalTaskCompletedToday: 10,
-    totalInteractions: 10,
-    totalConversations: 50,
-    totalConversationsToday: 5,
-    averageConversationTime: "50 mins",
+    battery: 0,
+    cpuUsage: 0,
+    ramUsage: 0,
+    ipadBattery: 0,
+    totalTaskCompleted: 0,
+    totalTaskCompletedToday: 0,
+    totalConversations: 0,
+    totalConversationsToday: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,9 +40,19 @@ export default function AnalyticsAndReport() {
         response = await getRobotByEmail(userEmail);
       }
 
-      setRobots(response.data);
-      if (response.data.length > 0) {
-        setSelectedRobot(response.data[0].robotId);
+      console.log("Raw robots data from API:", response.data);
+
+      // Remove duplicates based on robotId
+      const uniqueRobots = Array.from(
+        new Map(response.data.map(item => [item.robotId, item])).values()
+      );
+
+      console.log("Unique robots after filtering duplicates:", uniqueRobots);
+
+      setRobots(uniqueRobots);
+
+      if (uniqueRobots.length > 0) {
+        setSelectedRobot(uniqueRobots[0].robotId);
       }
       setIsLoading(false);
     } catch (error) {
@@ -61,6 +67,7 @@ export default function AnalyticsAndReport() {
         (robot) => robot.robotId === selectedRobot
       );
 
+      // Fetch command history
       const commandHistoryResponse = await getCommandHistory(selectedRobot);
       const commandHistory = commandHistoryResponse.data || [];
 
@@ -71,19 +78,21 @@ export default function AnalyticsAndReport() {
         return cmdDate.toDateString() === today.toDateString();
       }).length;
 
+      // Fetch robot analytics from backend
+      const analyticsResponse = await getAnalytics(selectedRobot);
+      const analyticsList = analyticsResponse?.data?.data || [];
+
+      const latestAnalytics = analyticsList[0] || {};
+
       setAnalyticsData({
-        battery: 30 + ((robotIndex * 5) % 70),
-        cpuUsage: 50 + ((robotIndex * 7) % 50),
-        ramUsage: 40 + ((robotIndex * 10) % 60),
-        ipadBattery: 50 + ((robotIndex * 3) % 50),
-        distance: `${800 + robotIndex * 200}m`,
-        totalUptime: `${100 + robotIndex * 20} mins`,
+        battery: latestAnalytics.battery ?? 0,
+        cpuUsage: latestAnalytics.cpuUsage ?? 0,
+        ramUsage: latestAnalytics.ramUsage ?? 0,
+        ipadBattery: latestAnalytics.ipadBattery ?? 0,
         totalTaskCompleted: totalCommands || 80 + robotIndex * 10,
         totalTaskCompletedToday: todayCommands || 5 + robotIndex * 2,
-        totalInteractions: 8 + robotIndex * 3,
         totalConversations: 40 + robotIndex * 5,
         totalConversationsToday: 3 + robotIndex * 1,
-        averageConversationTime: `${45 + robotIndex * 5} mins`,
       });
     } catch (error) {
       console.error("Error fetching robot data:", error);
@@ -95,8 +104,8 @@ export default function AnalyticsAndReport() {
   }
 
   return (
-    <div style={{background:"rgb(244, 244, 244)" , paddingTop:"0.5px"}}>
-      <div className="robot-selector" style={{ margin: "20px"}}>
+    <div style={{ background: "rgb(244, 244, 244)", paddingTop: "0.5px", height: "100vh", display: "flex", flexDirection: "column" }}>
+      <div className="robot-selector" style={{ margin: "20px" }}>
         <label>Select Robot: </label>
         <select
           value={selectedRobot}
@@ -114,111 +123,25 @@ export default function AnalyticsAndReport() {
           }}
         >
           {robots.map((robot) => (
-            <option key={robot._id} value={robot.robotId}>
+            <option key={robot.robotId} value={robot.robotId}>
               {robot.robotName || robot.robotId}
             </option>
           ))}
         </select>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          margin: "20px",
-        }}
-      >
-        <div>
-          <CircularGraph
-            level={analyticsData.battery}
-            heading="Battery"
-          ></CircularGraph>
-        </div>
-        <div>
-          <CircularGraph
-            level={analyticsData.cpuUsage}
-            heading="CPU Usage"
-          ></CircularGraph>
-        </div>
-        <div>
-          <CircularGraph
-            level={analyticsData.ramUsage}
-            heading="RAM Usage"
-          ></CircularGraph>
-        </div>
-        <div>
-          <CircularGraph
-            level={analyticsData.ipadBattery}
-            heading="Ipad Battery"
-          ></CircularGraph>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "20px" }}>
+        <CircularGraph level={analyticsData.battery} heading="Battery" />
+        <CircularGraph level={analyticsData.cpuUsage} heading="CPU Usage" />
+        <CircularGraph level={analyticsData.ramUsage} heading="RAM Usage" />
+        <CircularGraph level={analyticsData.ipadBattery} heading="iPad Battery" />
       </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          margin: "20px",
-        }}
-      >
-        <div>
-          <RobotData
-            heading="Distance"
-            data={analyticsData.distance}
-          ></RobotData>
-        </div>
-        <div>
-          <RobotData
-            heading="Total Uptime"
-            data={analyticsData.totalUptime}
-          ></RobotData>
-        </div>
-        <div>
-          <RobotData
-            heading="Total Task Completed"
-            data={analyticsData.totalTaskCompleted}
-          ></RobotData>
-        </div>
-        <div>
-          <RobotData
-            heading="Total Task Completed Today"
-            data={analyticsData.totalTaskCompletedToday}
-          ></RobotData>
-        </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          margin: "20px",
-        }}
-      >
-        <div>
-          <RobotData
-            heading="Total interactions with people"
-            data={analyticsData.totalInteractions}
-          ></RobotData>
-        </div>
-        <div>
-          <RobotData
-            heading="Total Conversations"
-            data={analyticsData.totalConversations}
-          ></RobotData>
-        </div>
-        <div>
-          <RobotData
-            heading="Total Conversations Today"
-            data={analyticsData.totalConversationsToday}
-          ></RobotData>
-        </div>
-        <div>
-          <RobotData
-            heading="Average Conversation time"
-            data={analyticsData.averageConversationTime}
-          ></RobotData>
-        </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "20px" }}>
+        <RobotData heading="Total Task Completed" data={analyticsData.totalTaskCompleted} />
+        <RobotData heading="Total Task Completed Today" data={analyticsData.totalTaskCompletedToday} />
+        <RobotData heading="Total Conversations" data={analyticsData.totalConversations} />
+        <RobotData heading="Total Conversations Today" data={analyticsData.totalConversationsToday} />
       </div>
     </div>
   );

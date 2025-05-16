@@ -19,6 +19,7 @@ export default function RobotDetails() {
     yearOfManufacture: "",
     apikey: "",
   });
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchRobots = async () => {
@@ -73,21 +74,11 @@ export default function RobotDetails() {
     }
   };
 
-  const [isVisible, setIsVisible] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText("xyz");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 60000);
-  };
-
   return (
-    <div className="dashboard-content dashboard-content-robo" style={{marginLeft:"40px"}}>
+    <div
+      className="dashboard-content dashboard-content-robo"
+      style={{ marginLeft: "40px" }}
+    >
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -109,7 +100,7 @@ export default function RobotDetails() {
                 <th>ROM (GB)</th>
                 <th>Manufacturer</th>
                 <th>Year of Manufacture</th>
-                <th>Api Key</th>
+                <th>API Key</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -154,7 +145,10 @@ export default function RobotDetails() {
                         type="number"
                         value={robotData.ram}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, ram: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            ram: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -167,7 +161,10 @@ export default function RobotDetails() {
                         type="text"
                         value={robotData.cpu}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, cpu: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            cpu: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -180,7 +177,10 @@ export default function RobotDetails() {
                         type="number"
                         value={robotData.rom}
                         onChange={(e) =>
-                          setRobotData({ ...robotData, rom: e.target.value })
+                          setRobotData({
+                            ...robotData,
+                            rom: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -219,9 +219,23 @@ export default function RobotDetails() {
                       robot.yearOfManufacture
                     )}
                   </td>
-                  <td style={{ cursor: "pointer" }}>
-                    <i class="fa-solid fa-ellipsis"></i>
+
+                  {/* API Key Column with only copy icon */}
+                  <td>
+                    <i
+                      className={`fa-solid ${
+                        copied === robot._id ? "fa-check" : "fa-copy"
+                      } copy-icon`}
+                      onClick={() => {
+                        navigator.clipboard.writeText(robot.apiKey);
+                        setCopied(robot._id);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    ></i>
                   </td>
+
+                  {/* Actions */}
                   <td
                     style={{
                       display: "flex",
@@ -231,7 +245,7 @@ export default function RobotDetails() {
                   >
                     {robot._id === editRobot ? (
                       <button className="approve" onClick={handleUpdate}>
-                        <i class="fa-regular fa-circle-check icon-check"></i>
+                        <i className="fa-regular fa-circle-check icon-check"></i>
                       </button>
                     ) : (
                       <button
@@ -244,7 +258,7 @@ export default function RobotDetails() {
                         onClick={() => handleEdit(robot)}
                       >
                         <i
-                          class="fa-solid fa-pen"
+                          className="fa-solid fa-pen"
                           style={{ color: "black" }}
                         ></i>
                       </button>
@@ -253,7 +267,7 @@ export default function RobotDetails() {
                       className="reject"
                       onClick={() => handleDelete(robot._id)}
                     >
-                      <i class="fa-solid fa-trash icon-trash-robo"></i>
+                      <i className="fa-solid fa-trash icon-trash-robo"></i>
                     </button>
                   </td>
                 </tr>
@@ -262,32 +276,6 @@ export default function RobotDetails() {
           </table>
         </div>
       )}
-      {/* <div className="api-box">
-        <div className="inner-api">
-          <div className="api-header">
-            <i className="fa-solid fa-xmark close-icon"></i>
-          </div>
-          <div className="api-content">
-            <span className="api-key">
-              {isVisible ? "xyz" : "•".repeat(16)}
-            </span>
-            <div className="api-icons">
-              <i
-                className={`fa-solid ${
-                  isVisible ? "fa-eye-slash" : "fa-eye"
-                } eye-icon`}
-                onClick={toggleVisibility}
-              ></i>
-              <i
-                className={`fa-solid ${
-                  copied ? "fa-check" : "fa-copy"
-                } copy-icon`}
-                onClick={handleCopy}
-              ></i>
-            </div>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }
