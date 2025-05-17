@@ -10,7 +10,6 @@ export default function TaskManagment() {
   const [commandLogs, setCommandLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch available robots
   useEffect(() => {
     fetchRobots();
   }, []);

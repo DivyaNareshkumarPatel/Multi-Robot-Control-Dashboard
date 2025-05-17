@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import CircularGraph from "./CircularGraph";
 import RobotData from "./RobotData";
-import { getAllRobots, getRobotByEmail, getCommandHistory, getAnalytics } from "../api/api";
+import {
+  getAllRobots,
+  getRobotByEmail,
+  getCommandHistory,
+  getAnalytics,
+  getAllChats,
+} from "../api/api";
 
 export default function AnalyticsAndReport() {
   const [robots, setRobots] = useState([]);
@@ -40,20 +46,17 @@ export default function AnalyticsAndReport() {
         response = await getRobotByEmail(userEmail);
       }
 
-      console.log("Raw robots data from API:", response.data);
-
       // Remove duplicates based on robotId
       const uniqueRobots = Array.from(
-        new Map(response.data.map(item => [item.robotId, item])).values()
+        new Map(response.data.map((item) => [item.robotId, item])).values()
       );
-
-      console.log("Unique robots after filtering duplicates:", uniqueRobots);
 
       setRobots(uniqueRobots);
 
       if (uniqueRobots.length > 0) {
         setSelectedRobot(uniqueRobots[0].robotId);
       }
+
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching robots:", error);
@@ -63,25 +66,42 @@ export default function AnalyticsAndReport() {
 
   const fetchRobotData = async () => {
     try {
-      const robotIndex = robots.findIndex(
-        (robot) => robot.robotId === selectedRobot
-      );
+      const today = new Date();
+      const robotId = selectedRobot;
 
       // Fetch command history
-      const commandHistoryResponse = await getCommandHistory(selectedRobot);
+      const commandHistoryResponse = await getCommandHistory(robotId);
       const commandHistory = commandHistoryResponse.data || [];
 
-      const totalCommands = commandHistory.length;
-      const todayCommands = commandHistory.filter((cmd) => {
+      const totalTaskCompleted = commandHistory.filter(
+        (cmd) => cmd.status === "completed"
+      ).length;
+
+      const totalTaskCompletedToday = commandHistory.filter((cmd) => {
         const cmdDate = new Date(cmd.createdAt);
-        const today = new Date();
-        return cmdDate.toDateString() === today.toDateString();
+        return (
+          cmd.status === "completed" &&
+          cmdDate.toDateString() === today.toDateString()
+        );
       }).length;
 
-      // Fetch robot analytics from backend
-      const analyticsResponse = await getAnalytics(selectedRobot);
-      const analyticsList = analyticsResponse?.data?.data || [];
+      // ✅ Fetch conversations from chat data
+      const chatResponse = await getAllChats();
+      const allChats = chatResponse.data || [];
 
+      const conversationChats = allChats.filter((chat) =>
+        chat.messages?.some((msg) => msg.text?.includes(robotId))
+      );
+
+      const totalConversations = conversationChats.length;
+
+      const totalConversationsToday = conversationChats.filter((chat) => {
+        const chatDate = new Date(chat.createdAt);
+        return chatDate.toDateString() === today.toDateString();
+      }).length;
+
+      const analyticsResponse = await getAnalytics(robotId);
+      const analyticsList = analyticsResponse?.data?.data || [];
       const latestAnalytics = analyticsList[0] || {};
 
       setAnalyticsData({
@@ -89,10 +109,10 @@ export default function AnalyticsAndReport() {
         cpuUsage: latestAnalytics.cpuUsage ?? 0,
         ramUsage: latestAnalytics.ramUsage ?? 0,
         ipadBattery: latestAnalytics.ipadBattery ?? 0,
-        totalTaskCompleted: totalCommands || 80 + robotIndex * 10,
-        totalTaskCompletedToday: todayCommands || 5 + robotIndex * 2,
-        totalConversations: 40 + robotIndex * 5,
-        totalConversationsToday: 3 + robotIndex * 1,
+        totalTaskCompleted,
+        totalTaskCompletedToday,
+        totalConversations,
+        totalConversationsToday,
       });
     } catch (error) {
       console.error("Error fetching robot data:", error);
@@ -104,7 +124,15 @@ export default function AnalyticsAndReport() {
   }
 
   return (
-    <div style={{ background: "rgb(244, 244, 244)", paddingTop: "0.5px", height: "100vh", display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        background: "rgb(244, 244, 244)",
+        paddingTop: "0.5px",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <div className="robot-selector" style={{ margin: "20px" }}>
         <label>Select Robot: </label>
         <select
@@ -130,14 +158,28 @@ export default function AnalyticsAndReport() {
         </select>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          margin: "20px",
+        }}
+      >
         <CircularGraph level={analyticsData.battery} heading="Battery" />
         <CircularGraph level={analyticsData.cpuUsage} heading="CPU Usage" />
         <CircularGraph level={analyticsData.ramUsage} heading="RAM Usage" />
         <CircularGraph level={analyticsData.ipadBattery} heading="iPad Battery" />
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          margin: "20px",
+        }}
+      >
         <RobotData heading="Total Task Completed" data={analyticsData.totalTaskCompleted} />
         <RobotData heading="Total Task Completed Today" data={analyticsData.totalTaskCompletedToday} />
         <RobotData heading="Total Conversations" data={analyticsData.totalConversations} />

@@ -17,7 +17,7 @@ export default function RobotDetails() {
     rom: "",
     manufacturer: "",
     yearOfManufacture: "",
-    apikey: "",
+    apiKey: "",
   });
   const [copied, setCopied] = useState(false);
 
@@ -25,7 +25,15 @@ export default function RobotDetails() {
     const fetchRobots = async () => {
       try {
         const response = await getAllRobots();
-        setRobots(response.data);
+
+        console.log("Fetched robots:", response.data);
+
+        // Deduplicate by _id (in case backend sends duplicates)
+        const uniqueRobots = Array.from(
+          new Map(response.data.map((robot) => [robot._id, robot]))
+        ).map(([, robot]) => robot);
+
+        setRobots(uniqueRobots);
         setLoading(false);
       } catch (err) {
         setError("Error fetching robots");
@@ -33,6 +41,8 @@ export default function RobotDetails() {
       }
     };
     fetchRobots();
+
+    // NOTE: If you see double fetch in dev, check React.StrictMode in your app root
   }, []);
 
   const handleEdit = (robot) => {
