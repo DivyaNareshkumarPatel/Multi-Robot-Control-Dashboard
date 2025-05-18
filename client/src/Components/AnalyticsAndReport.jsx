@@ -46,7 +46,6 @@ export default function AnalyticsAndReport() {
         response = await getRobotByEmail(userEmail);
       }
 
-      // Remove duplicates based on robotId
       const uniqueRobots = Array.from(
         new Map(response.data.map((item) => [item.robotId, item])).values()
       );
@@ -64,12 +63,19 @@ export default function AnalyticsAndReport() {
     }
   };
 
+  const isTodayUTC = (dateStr) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    return (
+      date.getUTCFullYear() === now.getUTCFullYear() &&
+      date.getUTCMonth() === now.getUTCMonth() &&
+      date.getUTCDate() === now.getUTCDate()
+    );
+  };
+
   const fetchRobotData = async () => {
     try {
-      const today = new Date();
       const robotId = selectedRobot;
-
-      // Fetch command history
       const commandHistoryResponse = await getCommandHistory(robotId);
       const commandHistory = commandHistoryResponse.data || [];
 
@@ -81,11 +87,10 @@ export default function AnalyticsAndReport() {
         const cmdDate = new Date(cmd.createdAt);
         return (
           cmd.status === "completed" &&
-          cmdDate.toDateString() === today.toDateString()
+          isTodayUTC(cmd.createdAt)
         );
       }).length;
 
-      // ✅ Fetch conversations from chat data
       const chatResponse = await getAllChats();
       const allChats = chatResponse.data || [];
 
@@ -96,8 +101,9 @@ export default function AnalyticsAndReport() {
       const totalConversations = conversationChats.length;
 
       const totalConversationsToday = conversationChats.filter((chat) => {
-        const chatDate = new Date(chat.createdAt);
-        return chatDate.toDateString() === today.toDateString();
+        if (!chat.createdAt) return false;
+        console.log(isTodayUTC(chat.createdAt))
+        return isTodayUTC(chat.createdAt);
       }).length;
 
       const analyticsResponse = await getAnalytics(robotId);
@@ -128,7 +134,7 @@ export default function AnalyticsAndReport() {
       style={{
         background: "rgb(244, 244, 244)",
         paddingTop: "0.5px",
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
@@ -164,6 +170,7 @@ export default function AnalyticsAndReport() {
           alignItems: "center",
           justifyContent: "space-between",
           margin: "20px",
+          flexWrap: "wrap",
         }}
       >
         <CircularGraph level={analyticsData.battery} heading="Battery" />
@@ -178,12 +185,13 @@ export default function AnalyticsAndReport() {
           alignItems: "center",
           justifyContent: "space-between",
           margin: "20px",
+          flexWrap: "wrap",
         }}
       >
         <RobotData heading="Total Task Completed" data={analyticsData.totalTaskCompleted} />
         <RobotData heading="Total Task Completed Today" data={analyticsData.totalTaskCompletedToday} />
         <RobotData heading="Total Conversations" data={analyticsData.totalConversations} />
-        <RobotData heading="Total Conversations Today" data={analyticsData.totalConversationsToday} />
+        {/* <RobotData heading="Total Conversations Today" data={analyticsData.totalConversationsToday} /> */}
       </div>
     </div>
   );

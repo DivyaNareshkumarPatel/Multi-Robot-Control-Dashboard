@@ -4,7 +4,7 @@ const robotDataStyle = {
   container: {
     background: "#FFFFFF", // White background for light mode
     height: "80px",
-    width: "280px",
+    width: "420px",
     borderRadius: "12px", // Slightly more rounded edges
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
     padding: "20px",

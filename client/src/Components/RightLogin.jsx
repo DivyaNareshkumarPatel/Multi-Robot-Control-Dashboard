@@ -92,7 +92,7 @@ export default function RightLogin() {
 
   return (
     <div className="rightLogin">
-      <h1 className="loginTitle">GUNI-SmartBotX</h1>
+      <h1 className="loginTitle">Multi-Robot Control Dashboard</h1>
       <h3 className="loginWelcome">Welcome Back</h3>
       <form onSubmit={handleSubmit} className="loginForm">
         <div className={`inputWrapper ${emailError ? 'error' : ''}`}>
