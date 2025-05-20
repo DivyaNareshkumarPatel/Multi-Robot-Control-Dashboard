@@ -16,6 +16,47 @@ The Multi-Robot Control Dashboard is a full-stack web application that allows us
 - **Robot Simulator** - Includes a built-in simulator for testing without physical robots
 - **Responsive UI** - Modern interface that works on desktop and mobile devices
 
+## ScreenShots
+
+### Dashboard login
+![Dashboard login](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/login.png)
+
+###  User Details
+![User Details](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/userDetails.png)
+
+### Assign Robot to User
+![Assign Robot to User](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/assignRobot.png)
+
+### Robot Registration
+![Robot Registration](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/robotRegistration.png)
+
+### Robot Details
+![Robot Details](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/robotDetails.png)
+
+### Robot Vision and Mapping
+![Robot Vision and Mapping](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/vision.png)
+
+### Robot Control Panel
+![Robot Control Panel](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/controlPanel.png)
+
+### Robot Analytics and Reports
+![Robot Analytics and Reports](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/analytics.png)
+
+### Task Management
+![Task Management](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/task.png)
+
+### Command History
+![Command History](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/commands.png)
+
+### Live Chat Dashboard
+![Live Chat Dashboard](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/liveChats.png)
+
+### Chat bot login
+![Chat bot login](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/chatBotLogin.png)
+
+### Chat bot
+![Chat bot](https://github.com/DivyaNareshkumarPatel/Multi-Robot-Control-Dashboard/blob/master/ss/chatBot.png)
+
 ## 🔧 Technology Stack
 
 - **Frontend**: React.js
