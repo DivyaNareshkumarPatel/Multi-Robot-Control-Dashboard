@@ -68,7 +68,7 @@ The Multi-Robot Control Dashboard is a full-stack web application that allows us
    
    In the server directory:
    ```bash
-   npm start
+   nodemon index.js
    ```
    
    In a new terminal, in the client directory:
@@ -194,15 +194,6 @@ The system implements several layers of security:
    - Verify the user is authenticated
    - Check if the user has access to the requested robot
    - Review the logs for any unauthorized access attempts
-
-## 📝 Technical Documentation
-
-For detailed technical implementation, see the following sections:
-
-- [Database Schema](docs/database.md)
-- [API Endpoints](docs/api.md)
-- [WebSocket Protocol](docs/websocket.md)
-- [Security Model](docs/security.md)
 
 ## 🤝 Contributing
 
